@@ -1,0 +1,21 @@
+# Excel Search MCP Server Dependencies
+
+# MCP Framework
+mcp>=1.0.0
+
+# Excel Processing (for future implementation)
+openpyxl>=3.1.0
+pandas>=2.0.0
+
+# File System Operations
+pathlib2>=2.3.7; python_version < "3.4"
+
+# Logging and Utilities
+structlog>=23.0.0
+
+# Development Dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0

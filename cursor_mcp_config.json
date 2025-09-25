@@ -1,0 +1,14 @@
+{
+  "mcp": {
+    "servers": {
+      "excel-search-mcp": {
+        "command": "python",
+        "args": ["main.py"],
+        "cwd": "C:\\01_code\\excel-search-mcp",
+        "env": {
+          "PYTHONPATH": "C:\\01_code\\excel-search-mcp"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "excel-search-mcp": {
+      "command": "python",
+      "args": ["mcp_inspector_wrapper_simple.py"],
+      "cwd": "C:\\01_code\\excel-search-mcp",
+      "env": {
+        "PYTHONPATH": "C:\\01_code\\excel-search-mcp"
+      }
+    }
+  }
+}
