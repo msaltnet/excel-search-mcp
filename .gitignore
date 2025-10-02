@@ -144,12 +144,6 @@ dmypy.json
 ehthumbs.db
 Thumbs.db
 
-# Excel files (테스트용)
-*.xlsx
-*.xls
-!sample_files/*.xlsx
-!sample_files/*.xls
-
 # Logs
 *.log
 logs/
