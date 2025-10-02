@@ -1,0 +1,14 @@
+{
+  "server": {
+    "name": "excel-search-mcp",
+    "version": "0.1.0",
+    "description": "Excel 파일 검색 및 처리를 위한 MCP 서버"
+  },
+  "work_directory": "C:\\01_code\\excel-search-mcp\\sample",
+  "excel": {
+    "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
+    "max_file_size_mb": 100,
+    "max_files_per_search": 1000,
+    "recursive_search": true
+  }
+}
