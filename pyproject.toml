@@ -4,14 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "excel-search-mcp"
-version = "0.1.0"
-description = "Excel 파일 검색 및 처리를 위한 MCP 서버"
+version = "0.9.0"
+description = "A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC"
+long-description = "file:README.md"
 authors = [
     {name = "Excel Search MCP Team", email = "team@example.com"}
 ]
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.8"
+keywords = ["mcp", "excel", "search", "data-analysis", "ai", "claude", "cursor"]
+homepage = "https://github.com/msaltnet/excel-search-mcp"
+repository = "https://github.com/msaltnet/excel-search-mcp"
+documentation = "https://github.com/msaltnet/excel-search-mcp#readme"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

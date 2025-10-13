@@ -1,0 +1,108 @@
+{
+  "name": "excel-search-mcp",
+  "version": "0.9.0",
+  "description": "A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC",
+  "author": "msalt.net",
+  "license": "MIT",
+  "homepage": "https://github.com/msaltnet/excel-search-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msaltnet/excel-search-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "excel",
+    "search",
+    "data-analysis",
+    "ai",
+    "claude",
+    "cursor",
+    "spreadsheet",
+    "office-automation"
+  ],
+  "categories": [
+    "Data Analysis",
+    "File Management",
+    "Office Automation",
+    "AI Tools"
+  ],
+  "tags": [
+    "excel",
+    "mcp-server",
+    "data-processing",
+    "file-search",
+    "spreadsheet-analysis"
+  ],
+  "requirements": {
+    "python": ">=3.8",
+    "dependencies": [
+      "mcp>=1.0.0",
+      "openpyxl>=3.1.0",
+      "pandas>=2.0.0",
+      "structlog>=23.0.0"
+    ]
+  },
+  "features": [
+    "Excel file search and discovery",
+    "Multi-worksheet support",
+    "Text search within Excel files",
+    "JSON data conversion",
+    "Security controls and access restrictions",
+    "Comprehensive file metadata",
+    "Support for .xlsx, .xls, .xlsm, .xlsb formats"
+  ],
+  "tools": [
+    {
+      "name": "list_excel_files",
+      "description": "Returns a list of Excel files in the specified directory",
+      "parameters": {}
+    },
+    {
+      "name": "read_excel_data",
+      "description": "Reads Excel file data and converts it to JSON format",
+      "parameters": {
+        "file_path": "Absolute path to the Excel file",
+        "worksheet_name": "Name of worksheet to read (optional)",
+        "max_rows": "Maximum number of rows to read (optional)"
+      }
+    },
+    {
+      "name": "search_in_excel",
+      "description": "Searches for specific text within Excel files",
+      "parameters": {
+        "file_path": "Absolute path to the Excel file",
+        "search_term": "Text to search for",
+        "worksheet_name": "Specific worksheet to search (optional)",
+        "case_sensitive": "Whether search should be case sensitive (optional)"
+      }
+    }
+  ],
+  "installation": {
+    "method": "pip",
+    "command": "pip install excel-search-mcp"
+  },
+  "configuration": {
+    "config_file": "config.json",
+    "required_settings": [
+      "work_directory"
+    ],
+    "optional_settings": [
+      "max_file_size_mb",
+      "max_files_per_search",
+      "recursive_search"
+    ]
+  },
+  "compatibility": {
+    "mcp_version": ">=1.0.0",
+    "clients": [
+      "Claude Desktop",
+      "Cursor",
+      "MCP Inspector"
+    ]
+  },
+  "documentation": {
+    "readme": "README.md",
+    "examples": "examples/usage_examples.py",
+    "sample_data": "sample/"
+  }
+}

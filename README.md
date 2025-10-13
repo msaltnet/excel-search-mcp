@@ -2,6 +2,11 @@
 
 A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC
 
+[![Smithery](https://img.shields.io/badge/Available%20on-Smithery-blue)](https://smithery.ai/)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![MCP](https://img.shields.io/badge/MCP-1.0%2B-orange)](https://modelcontextprotocol.io/)
+
 [한국어 문서](README_ko.md) | [English Documentation](README.md)
 
 ## 📋 Project Overview
