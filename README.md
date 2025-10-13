@@ -1,22 +1,25 @@
 # Excel Search MCP
 
-로컬 PC의 엑셀 파일을 검색하고 내용을 읽어오는 MCP(Model Context Protocol) 서버
+A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC
 
-## 📋 프로젝트 개요
+[한국어 문서](README_ko.md) | [English Documentation](README.md)
 
-이 프로젝트는 MCP(Model Context Protocol)를 통해 로컬 PC의 Excel 파일들을 검색하고, 내용을 읽어와서 AI 모델이 활용할 수 있는 형태로 제공하는 서버입니다.
+## 📋 Project Overview
 
-## 🎯 주요 기능
+This project provides a Model Context Protocol (MCP) server that enables AI models to search and read Excel files from your local PC. It allows AI clients supporting MCP (such as Claude Desktop, Cursor) to directly search and analyze Excel files through a standardized interface.
 
-- **엑셀 파일 검색**: 지정된 디렉토리에서 Excel 파일들을 재귀적으로 검색
-- **파일 목록 제공**: 발견된 Excel 파일들의 절대 경로 목록 제공
-- **파일 요약**: Excel 파일의 기본 정보 및 구조 요약 제공
-- **데이터 추출**: Excel 파일의 내용을 JSON 형태로 변환하여 제공
-- **워크시트 관리**: 다중 워크시트 지원 및 개별 워크시트 접근
+## 🎯 Key Features
 
-## 🏗️ 아키텍처
+- **Excel File Search**: Recursively search for Excel files in specified directories
+- **File Metadata**: Provide comprehensive metadata including file paths, sizes, modification dates
+- **Data Extraction**: Convert Excel file contents to JSON format for AI consumption
+- **Text Search**: Search for specific text within Excel files
+- **Multi-worksheet Support**: Handle multiple worksheets and individual worksheet access
+- **Security Controls**: Restrict file access through work directory limitations
 
-### 시스템 구성도
+## 🏗️ Architecture
+
+### System Diagram
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   AI Client     │◄──►│  MCP Server     │◄──►│  Excel Files    │
@@ -31,161 +34,289 @@
                        └─────────────────┘
 ```
 
-### 핵심 컴포넌트
+### Core Components
 
-1. **MCP Server Core**
-   - MCP 프로토콜 구현
-   - 클라이언트와의 통신 관리
-   - 요청/응답 처리
+1. **MCP Server Core** (`src/server.py`)
+   - MCP protocol implementation
+   - Client communication management
+   - Request/response handling
 
-2. **Excel Processor**
-   - Excel 파일 읽기/파싱
-   - 워크시트 데이터 추출
-   - JSON 변환 로직
+2. **Excel Processor** (`src/excel_processor.py`)
+   - Excel file reading/parsing
+   - Worksheet data extraction
+   - JSON conversion logic
 
-3. **File Scanner**
-   - 디렉토리 재귀 검색
-   - Excel 파일 필터링
-   - 파일 메타데이터 수집
+3. **File Scanner** (`src/file_scanner.py`)
+   - Recursive directory scanning
+   - Excel file filtering
+   - File metadata collection
 
-4. **Data Formatter**
-   - Excel 데이터를 JSON으로 변환
-   - 요약 정보 생성
-   - 에러 처리 및 검증
+4. **Config Manager** (`src/config_manager.py`)
+   - Configuration file management
+   - Security policy enforcement
+   - Work directory restrictions
 
-## 📝 작업 계획
+## 🛠️ Technology Stack
 
-### Phase 1: 프로젝트 초기 설정 (1-2일)
-- [ ] Python 프로젝트 구조 설정
-- [ ] MCP 서버 기본 프레임워크 구현
-- [ ] 의존성 관리 (requirements.txt, pyproject.toml)
-- [ ] 기본 설정 파일 구성
+- **Language**: Python 3.8+
+- **MCP Framework**: mcp (Model Context Protocol)
+- **Excel Processing**: openpyxl, pandas
+- **File System**: pathlib, os
+- **Data Conversion**: json
+- **Logging**: logging
+- **Testing**: pytest
 
-### Phase 2: 핵심 기능 구현 (3-4일)
-- [ ] Excel 파일 검색 기능
-  - [ ] 디렉토리 재귀 스캔
-  - [ ] Excel 파일 확장자 필터링 (.xlsx, .xls)
-  - [ ] 파일 메타데이터 수집
-- [ ] Excel 파일 읽기 기능
-  - [ ] openpyxl/pandas를 사용한 Excel 파싱
-  - [ ] 다중 워크시트 지원
-  - [ ] 데이터 타입 처리 (문자열, 숫자, 날짜 등)
-
-### Phase 3: MCP 도구 구현 (2-3일)
-- [ ] `list_excel_files` 도구
-  - [ ] 지정된 디렉토리에서 Excel 파일 목록 반환
-  - [ ] 파일 경로, 크기, 수정일시 정보 포함
-- [ ] `get_excel_summary` 도구
-  - [ ] Excel 파일의 기본 정보 제공
-  - [ ] 워크시트 목록, 행/열 수, 데이터 타입 정보
-- [ ] `read_excel_data` 도구
-  - [ ] Excel 파일 내용을 JSON으로 변환
-  - [ ] 특정 워크시트 선택 옵션
-  - [ ] 데이터 범위 제한 옵션
-
-### Phase 4: 고급 기능 및 최적화 (2-3일)
-- [ ] 성능 최적화
-  - [ ] 대용량 파일 처리 개선
-  - [ ] 메모리 사용량 최적화
-  - [ ] 캐싱 메커니즘 구현
-- [ ] 에러 처리 강화
-  - [ ] 파일 접근 권한 에러 처리
-  - [ ] 손상된 Excel 파일 처리
-  - [ ] 메모리 부족 상황 처리
-- [ ] 로깅 및 모니터링
-  - [ ] 상세한 로그 기록
-  - [ ] 성능 메트릭 수집
-
-### Phase 5: 테스트 및 문서화 (1-2일)
-- [ ] 단위 테스트 작성
-- [ ] 통합 테스트 구현
-- [ ] 사용 예제 및 문서 작성
-- [ ] README 업데이트
-
-## 🛠️ 기술 스택
-
-- **언어**: Python 3.8+
-- **MCP 프레임워크**: mcp (Model Context Protocol)
-- **Excel 처리**: openpyxl, pandas
-- **파일 시스템**: pathlib, os
-- **데이터 변환**: json
-- **로깅**: logging
-- **테스트**: pytest
-
-## 📁 프로젝트 구조 (예상)
+## 📁 Project Structure
 
 ```
 excel-search-mcp/
 ├── src/
 │   ├── __init__.py
-│   ├── server.py              # MCP 서버 메인
-│   ├── excel_processor.py     # Excel 파일 처리
-│   ├── file_scanner.py        # 파일 검색
-│   └── data_formatter.py      # 데이터 변환
+│   ├── server.py              # MCP server main
+│   ├── excel_processor.py     # Excel file processing
+│   ├── file_scanner.py        # File scanning
+│   ├── config_manager.py      # Configuration management
+│   └── data_formatter.py      # Data formatting
 ├── tests/
-│   ├── __init__.py
 │   ├── test_server.py
-│   ├── test_excel_processor.py
-│   └── test_file_scanner.py
+│   ├── test_simple.py
+│   └── test_integration.py
 ├── examples/
 │   ├── sample_excel_files/
 │   └── usage_examples.py
+├── sample/                    # Sample Excel files
 ├── requirements.txt
 ├── pyproject.toml
-├── README.md
-└── .gitignore
+├── config.json               # Configuration file
+└── README.md
 ```
 
-## 🚀 사용 예시
+## 🚀 Installation & Setup
 
-```python
-# MCP 클라이언트에서 사용 예시
-tools = [
-    {
-        "name": "list_excel_files",
-        "description": "지정된 디렉토리에서 Excel 파일 목록을 반환합니다",
-        "parameters": {
-            "directory_path": "string",
-            "recursive": "boolean"
-        }
-    },
-    {
-        "name": "get_excel_summary", 
-        "description": "Excel 파일의 요약 정보를 제공합니다",
-        "parameters": {
-            "file_path": "string"
-        }
-    },
-    {
-        "name": "read_excel_data",
-        "description": "Excel 파일의 데이터를 JSON으로 읽어옵니다",
-        "parameters": {
-            "file_path": "string",
-            "worksheet_name": "string",
-            "max_rows": "integer"
-        }
+### 1. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Configure Settings
+
+Create a `config.json` file to set your work directory:
+
+```json
+{
+  "work_directory": "/path/to/your/excel/files",
+  "excel": {
+    "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
+    "max_file_size_mb": 100,
+    "max_files_per_search": 1000,
+    "recursive_search": true
+  }
+}
+```
+
+### 3. MCP Client Configuration
+
+#### Claude Desktop Configuration (`claude_desktop_config.json`)
+```json
+{
+  "mcpServers": {
+    "excel-search-mcp": {
+      "command": "python",
+      "args": ["C:/path/to/excel-search-mcp/src/server.py"],
+      "env": {}
     }
-]
+  }
+}
 ```
 
-## 📊 성능 목표
+#### Cursor Configuration (`cursor_mcp_config.json`)
+```json
+{
+  "mcpServers": {
+    "excel-search-mcp": {
+      "command": "python",
+      "args": ["C:/path/to/excel-search-mcp/src/server.py"]
+    }
+  }
+}
+```
 
-- **파일 검색**: 1000개 파일 기준 5초 이내
-- **Excel 읽기**: 10MB 파일 기준 3초 이내
-- **메모리 사용량**: 100MB 이하
-- **동시 처리**: 최대 10개 파일 동시 처리
+## 📊 Available Tools
 
-## 🔒 보안 고려사항
+### 1. `list_excel_files`
+Returns a list of Excel files in the specified directory.
 
-- 파일 접근 권한 검증
-- 경로 조작 공격 방지
-- 메모리 사용량 제한
-- 민감한 데이터 마스킹 옵션
+**Parameters**: None (uses work_directory from config file)
 
-## 📈 향후 확장 계획
+**Return Value**:
+```json
+{
+  "success": true,
+  "directory": "/path/to/directory",
+  "total_files": 5,
+  "scanned_files": 100,
+  "files": [
+    {
+      "file_path": "/path/to/file.xlsx",
+      "file_name": "file.xlsx",
+      "file_size": 1024000,
+      "modified_time": "2024-01-01T12:00:00Z",
+      "created_time": "2024-01-01T10:00:00Z",
+      "extension": ".xlsx"
+    }
+  ],
+  "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"]
+}
+```
 
-- [ ] Excel 파일 쓰기 기능
-- [ ] 실시간 파일 모니터링
-- [ ] 원격 Excel 파일 지원 (URL, 클라우드)
-- [ ] 고급 필터링 및 검색 기능
-- [ ] 데이터 시각화 지원
+### 2. `read_excel_data`
+Reads Excel file data and converts it to JSON format.
+
+**Parameters**:
+- `file_path` (required): Absolute path to the Excel file
+- `worksheet_name` (optional): Name of worksheet to read (default: first worksheet)
+- `max_rows` (optional): Maximum number of rows to read (default: all rows)
+
+**Return Value**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "worksheet_name": "Sheet1",
+  "headers": ["Column1", "Column2", "Column3"],
+  "rows": [
+    ["Value1", "Value2", "Value3"],
+    ["Value4", "Value5", "Value6"]
+  ],
+  "row_count": 2,
+  "column_count": 3,
+  "data_types": {
+    "Column1": "object",
+    "Column2": "int64",
+    "Column3": "float64"
+  }
+}
+```
+
+### 3. `search_in_excel`
+Searches for specific text within Excel files.
+
+**Parameters**:
+- `file_path` (required): Absolute path to the Excel file
+- `search_term` (required): Text to search for
+- `worksheet_name` (optional): Specific worksheet to search
+- `case_sensitive` (optional): Whether search should be case sensitive (default: false)
+
+**Return Value**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "worksheet_name": "Sheet1",
+  "search_term": "search term",
+  "case_sensitive": false,
+  "total_matches": 3,
+  "matches": [
+    {
+      "row": 1,
+      "column": "Column1",
+      "column_index": 0,
+      "value": "value containing search term",
+      "cell_address": "A1"
+    }
+  ]
+}
+```
+
+## 📁 Sample Data
+
+The project includes various types of Excel file samples:  
+from U.S Data.gov - https://catalog.data.gov/dataset/?q=excel
+
+### Agricultural Data
+- **Fruit Data**: `Apples-2022.xlsx`, `Avocados-2022.xlsx`, `Grapes-2022.xlsx`, etc.
+- **Vegetable Data**: `Carrots-2020.xlsx`, `Tomatoes-2020.xlsx`, `Broccoli-2020.xlsx`, etc.
+- **Grain Data**: `Black_beans-2020.xlsx`, `Corn_sweet-2020.xlsx`, etc.
+
+### Government/Public Data
+- **Education Data**: `SCH-0009-Limited-English-Proficient-Students-by-state.xlsx`
+- **Agricultural Statistics**: `BiotechCropsAllTables2024.xlsx`
+- **Trade Data**: `FoodImports.xlsx`, `hts_2025_revision_22_xls.xlsx`
+
+### Scientific/Research Data
+- **Bird Monitoring**: `NCRN LAND Bird Monitoring Data 2007 - 2017_Public.xlsx`
+- **Agricultural Production**: `monsumtable.xlsx`, `vegtot.xlsx`
+
+### Legacy Files
+- **Legacy Excel Files**: `ELGL 2010 SH 042417.xls`, `FRVI 2010 SH 042417.xls`
+
+These sample datasets can be used to test various Excel file formats and data structures.
+
+## 🔧 Usage Examples
+
+### Basic Usage
+
+1. **List Excel Files**:
+   ```
+   Use the list_excel_files tool to find all Excel files in the work directory.
+   ```
+
+2. **Read Specific File Data**:
+   ```
+   Use the read_excel_data tool to convert specific Excel file contents to JSON.
+   ```
+
+3. **Search Text in Files**:
+   ```
+   Use the search_in_excel tool to search for specific text within Excel files.
+   ```
+
+### Advanced Usage
+
+- **Large File Handling**: Use the `max_rows` parameter to limit memory usage
+- **Specific Worksheet Access**: Use the `worksheet_name` parameter to read only desired worksheets
+- **Case-Sensitive Search**: Use the `case_sensitive` parameter for precise searching
+
+## 🔒 Security Considerations
+
+- **Work Directory Restrictions**: Blocks access to files outside the configured work directory
+- **File Size Limits**: Prevents memory exhaustion from large files
+- **Permission Validation**: Verifies file access permissions for enhanced security
+- **Path Traversal Prevention**: Protects against relative path attacks
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+pytest tests/test_simple.py
+
+# Run integration tests
+pytest tests/test_integration.py
+
+# Run all tests
+pytest tests/
+```
+
+## 📈 Performance Characteristics
+
+- **File Search**: Under 5 seconds for 1000 files
+- **Excel Reading**: Under 3 seconds for 10MB files
+- **Memory Usage**: Typically under 100MB
+- **Supported Formats**: .xlsx, .xls, .xlsm, .xlsb
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 📞 Support
+
+If you encounter any issues or have questions, please create an issue.
