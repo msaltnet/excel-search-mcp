@@ -6,6 +6,7 @@ Main module of MCP server for Excel file search and processing
 
 import json
 import logging
+from typing import Optional
 
 from mcp.server.fastmcp import Context, FastMCP
 
@@ -20,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_server():
+def create_server() -> FastMCP:
     """Create and return a FastMCP server instance with session config."""
 
     server = FastMCP(name="Excel Search MCP")
@@ -46,7 +47,10 @@ def create_server():
 
     @server.tool()
     def read_excel_data_tool(
-        file_path: str, ctx: Context, worksheet_name: str = None, max_rows: int = None
+        file_path: str,
+        ctx: Context,
+        worksheet_name: Optional[str] = None,
+        max_rows: Optional[int] = None,
     ) -> str:
         """Read Excel file data and convert it to JSON format."""
         try:
@@ -72,7 +76,7 @@ def create_server():
         file_path: str,
         search_term: str,
         ctx: Context,
-        worksheet_name: str = None,
+        worksheet_name: Optional[str] = None,
         case_sensitive: bool = False,
     ) -> str:
         """Search for specific text within Excel file(s)."""

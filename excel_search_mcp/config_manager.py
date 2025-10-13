@@ -26,7 +26,7 @@ class ConfigManager:
                 with open(self.config_path, "r", encoding="utf-8") as f:
                     config = json.load(f)
                 logger.info(f"설정 파일 로드됨: {self.config_path}")
-                return config
+                return dict(config)
             else:
                 logger.warning(f"설정 파일이 없습니다: {self.config_path}")
                 return self._get_default_config()
@@ -60,25 +60,30 @@ class ConfigManager:
 
     def get_work_directory(self) -> str:
         """작업 디렉토리를 반환합니다."""
-        return self.config.get("work_directory", str(Path.home() / "Documents"))
+        result = self.config.get("work_directory", str(Path.home() / "Documents"))
+        return str(result)
 
     def get_supported_extensions(self) -> List[str]:
         """지원하는 Excel 확장자를 반환합니다."""
-        return self.config.get("excel", {}).get(
+        result = self.config.get("excel", {}).get(
             "supported_extensions", [".xlsx", ".xls", ".xlsm", ".xlsb"]
         )
+        return list(result)
 
     def get_max_file_size_mb(self) -> int:
         """최대 파일 크기(MB)를 반환합니다."""
-        return self.config.get("excel", {}).get("max_file_size_mb", 100)
+        result = self.config.get("excel", {}).get("max_file_size_mb", 100)
+        return int(result)
 
     def get_max_files_per_search(self) -> int:
         """검색당 최대 파일 수를 반환합니다."""
-        return self.config.get("excel", {}).get("max_files_per_search", 1000)
+        result = self.config.get("excel", {}).get("max_files_per_search", 1000)
+        return int(result)
 
     def get_recursive_search(self) -> bool:
         """재귀 검색 여부를 반환합니다."""
-        return self.config.get("excel", {}).get("recursive_search", True)
+        result = self.config.get("excel", {}).get("recursive_search", True)
+        return bool(result)
 
     def is_path_within_work_directory(self, path: str) -> bool:
         """경로가 작업 디렉토리 내에 있는지 확인합니다."""

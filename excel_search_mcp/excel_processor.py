@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ExcelProcessor:
     """Excel file processing class"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.supported_formats = config_manager.get_supported_extensions()
         self.config_manager = config_manager
 

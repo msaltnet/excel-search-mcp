@@ -20,7 +20,7 @@ EXCEL_EXTENSIONS = config_manager.get_supported_extensions()
 class FileScanner:
     """Excel file search and metadata collection class"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.supported_extensions = set(config_manager.get_supported_extensions())
         self.config_manager = config_manager
 
@@ -146,7 +146,7 @@ class FileScanner:
                 f"Excel file search started: {directory_path} (recursive: {recursive})"
             )
 
-            excel_files = []
+            excel_files: list[Dict[str, Any]] = []
             scanned_count = 0
 
             # Set file search pattern

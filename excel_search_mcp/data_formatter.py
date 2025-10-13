@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class DataFormatter:
     """Data formatting class"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.date_formats = [
             "%Y-%m-%d",
             "%Y-%m-%d %H:%M:%S",
@@ -167,7 +167,7 @@ class DataFormatter:
     def create_summary_stats(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Generate statistical summary information for DataFrame"""
         try:
-            stats = {}
+            stats: Dict[str, Any] = {}
 
             # Basic information
             stats["total_rows"] = len(df)

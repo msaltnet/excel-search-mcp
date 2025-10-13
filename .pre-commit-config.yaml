@@ -20,6 +20,14 @@ repos:
     hooks:
       - id: flake8
 
+  # 타입 검사
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [pandas-stubs]
+        args: [--ignore-missing-imports]
+
   # 기본적인 파일 검사
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0

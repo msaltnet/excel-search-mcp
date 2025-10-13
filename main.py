@@ -16,7 +16,7 @@ sys.path.insert(0, str(project_root))
 from excel_search_mcp.server import create_server  # noqa: E402
 
 
-def main():
+def main() -> None:
     """MCP 서버를 실행합니다."""
     try:
         # FastMCP 서버 생성

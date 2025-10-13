@@ -18,12 +18,12 @@ from excel_search_mcp.file_scanner import FileScanner, list_excel_files
 class TestFileScanner:
     """File scanner tests"""
 
-    def test_file_scanner_initialization(self):
+    def test_file_scanner_initialization(self) -> None:
         """Test FileScanner initialization"""
         scanner = FileScanner()
         assert scanner.supported_extensions == {".xlsx", ".xls", ".xlsm", ".xlsb"}
 
-    def test_is_excel_file(self):
+    def test_is_excel_file(self) -> None:
         """Test Excel file extension check"""
         scanner = FileScanner()
 
@@ -38,7 +38,7 @@ class TestFileScanner:
         assert scanner.is_excel_file(Path("test.pdf")) is False
         assert scanner.is_excel_file(Path("test.docx")) is False
 
-    def test_scan_nonexistent_directory(self):
+    def test_scan_nonexistent_directory(self) -> None:
         """Test scanning non-existent directory"""
         result = list_excel_files("/nonexistent/directory")
 
@@ -46,7 +46,7 @@ class TestFileScanner:
         assert "error" in result
         assert "does not exist" in result["error"]
 
-    def test_scan_file_instead_of_directory(self):
+    def test_scan_file_instead_of_directory(self) -> None:
         """Test scanning file as directory"""
         # Create temporary file
         with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as tmp_file:
@@ -65,12 +65,12 @@ class TestFileScanner:
 class TestExcelProcessor:
     """Excel processor tests"""
 
-    def test_excel_processor_initialization(self):
+    def test_excel_processor_initialization(self) -> None:
         """Test ExcelProcessor initialization"""
         processor = ExcelProcessor()
         assert processor.supported_formats == [".xlsx", ".xls", ".xlsm", ".xlsb"]
 
-    def test_is_supported_file(self):
+    def test_is_supported_file(self) -> None:
         """Test supported file format check"""
         processor = ExcelProcessor()
 
@@ -84,7 +84,7 @@ class TestExcelProcessor:
         assert processor.is_supported_file(Path("test.txt")) is False
         assert processor.is_supported_file(Path("test.pdf")) is False
 
-    def test_get_file_info_nonexistent_file(self):
+    def test_get_file_info_nonexistent_file(self) -> None:
         """Test getting information for non-existent file"""
         processor = ExcelProcessor()
         result = processor.validate_file_path("/nonexistent/file.xlsx")
@@ -96,12 +96,12 @@ class TestExcelProcessor:
 class TestDataFormatter:
     """Data formatter tests"""
 
-    def test_data_formatter_initialization(self):
+    def test_data_formatter_initialization(self) -> None:
         """Test DataFormatter initialization"""
         formatter = DataFormatter()
         assert len(formatter.date_formats) > 0
 
-    def test_format_value(self):
+    def test_format_value(self) -> None:
         """Test value formatting"""
         formatter = DataFormatter()
 

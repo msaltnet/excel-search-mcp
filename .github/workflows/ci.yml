@@ -28,6 +28,7 @@ jobs:
       run: |
         python -m pip install -e .
         python -m pip install -e ".[dev]"
+        python -m pip install pandas-stubs
 
     - name: Run pre-commit hooks
       run: pre-commit run --all-files
@@ -52,6 +53,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install -e ".[dev]"
+        python -m pip install pandas-stubs
 
     - name: Run black
       run: black --check .

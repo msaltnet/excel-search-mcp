@@ -10,7 +10,7 @@ import pytest
 class TestMCPServer:
     """MCP server tests"""
 
-    def test_server_creation(self):
+    def test_server_creation(self) -> None:
         """Test server creation"""
         from excel_search_mcp.server import create_server
 
@@ -20,7 +20,7 @@ class TestMCPServer:
         assert hasattr(server, "__class__")
         assert server.__class__.__name__ == "FastMCP"
 
-    def test_tool_functions_exist(self):
+    def test_tool_functions_exist(self) -> None:
         """Test that tool functions exist"""
         from excel_search_mcp.server import create_server
 
@@ -32,7 +32,7 @@ class TestMCPServer:
         assert hasattr(server, "__class__")
         assert server.__class__.__name__ == "FastMCP"
 
-    def test_config_manager(self):
+    def test_config_manager(self) -> None:
         """Test configuration manager"""
         from excel_search_mcp.config_manager import config_manager
 
