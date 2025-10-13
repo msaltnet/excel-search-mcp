@@ -151,3 +151,4 @@ logs/
 # Temporary files
 temp/
 tmp/
+.venv_311

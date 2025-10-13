@@ -7,7 +7,7 @@ MCP 서버의 설정을 관리하는 모듈
 import json
 import logging
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 

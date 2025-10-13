@@ -6,17 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "excel-search-mcp"
 version = "0.9.0"
 description = "A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC"
-long-description = "file:README.md"
 authors = [
     {name = "Excel Search MCP Team", email = "team@example.com"}
 ]
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 keywords = ["mcp", "excel", "search", "data-analysis", "ai", "claude", "cursor"]
-homepage = "https://github.com/msaltnet/excel-search-mcp"
-repository = "https://github.com/msaltnet/excel-search-mcp"
-documentation = "https://github.com/msaltnet/excel-search-mcp#readme"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -29,7 +25,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "mcp>=1.0.0",
+    "mcp>=1.15.0",
+    "smithery>=0.4.2",
     "openpyxl>=3.1.0",
     "pandas>=2.0.0",
     "structlog>=23.0.0",
@@ -47,7 +44,19 @@ dev = [
 ]
 
 [project.scripts]
-excel-search-mcp = "src.server:main"
+dev = "smithery.cli.dev:main"
+playground = "smithery.cli.playground:main"
+
+# Points to your server function
+[tool.smithery]
+server = "excel_search_mcp.server:create_server"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["excel_search_mcp*"]
 
 [tool.black]
 line-length = 88

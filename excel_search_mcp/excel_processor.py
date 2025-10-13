@@ -6,9 +6,9 @@ Module responsible for reading, parsing, and extracting data from Excel files
 
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 import pandas as pd
-import openpyxl
 
 from .config_manager import config_manager
 
@@ -56,7 +56,10 @@ class ExcelProcessor:
                 work_dir = self.config_manager.get_work_directory()
                 return {
                     "valid": False,
-                    "error": f"File access denied: {file_path}. Work directory: {work_dir}",
+                    "error": (
+                        f"File access denied: {file_path}. "
+                        f"Work directory: {work_dir}"
+                    ),
                     "error_code": "ACCESS_DENIED",
                     "work_directory": work_dir,
                 }
@@ -197,9 +200,6 @@ class ExcelProcessor:
             # Execute search
             if not case_sensitive:
                 search_term = search_term.lower()
-                search_df = df.astype(str).apply(lambda x: x.str.lower())
-            else:
-                search_df = df.astype(str)
 
             # Find search results
             matches = []

@@ -4,14 +4,15 @@ Simple Functionality Tests
 Simple tests for actually implemented functionality.
 """
 
-import pytest
-from pathlib import Path
-import tempfile
 import os
+import tempfile
+from pathlib import Path
 
-from src.file_scanner import FileScanner, list_excel_files
-from src.excel_processor import ExcelProcessor
-from src.data_formatter import DataFormatter
+import pytest
+
+from excel_search_mcp.data_formatter import DataFormatter
+from excel_search_mcp.excel_processor import ExcelProcessor
+from excel_search_mcp.file_scanner import FileScanner, list_excel_files
 
 
 class TestFileScanner:

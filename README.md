@@ -84,11 +84,7 @@ excel-search-mcp/
 │   └── data_formatter.py      # Data formatting
 ├── tests/
 │   ├── test_server.py
-│   ├── test_simple.py
-│   └── test_integration.py
-├── examples/
-│   ├── sample_excel_files/
-│   └── usage_examples.py
+│   └── test_simple.py
 ├── sample/                    # Sample Excel files
 ├── requirements.txt
 ├── pyproject.toml
@@ -236,7 +232,7 @@ Searches for specific text within Excel files.
 
 ## 📁 Sample Data
 
-The project includes various types of Excel file samples:  
+The project includes various types of Excel file samples:
 from U.S Data.gov - https://catalog.data.gov/dataset/?q=excel
 
 ### Agricultural Data
@@ -296,8 +292,8 @@ These sample datasets can be used to test various Excel file formats and data st
 # Run unit tests
 pytest tests/test_simple.py
 
-# Run integration tests
-pytest tests/test_integration.py
+# Run server tests
+pytest tests/test_server.py
 
 # Run all tests
 pytest tests/

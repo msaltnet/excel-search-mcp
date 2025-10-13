@@ -5,9 +5,9 @@ Module responsible for Excel file search and metadata collection
 """
 
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 from .config_manager import config_manager
 
@@ -58,7 +58,10 @@ class FileScanner:
                 work_dir = self.config_manager.get_work_directory()
                 return {
                     "valid": False,
-                    "error": f"Directory access denied: {directory_path}. Work directory: {work_dir}",
+                    "error": (
+                        f"Directory access denied: {directory_path}. "
+                        f"Work directory: {work_dir}"
+                    ),
                     "error_code": "ACCESS_DENIED",
                     "work_directory": work_dir,
                 }
@@ -167,7 +170,8 @@ class FileScanner:
                     excel_files.append(metadata)
 
             logger.info(
-                f"Search completed: {len(excel_files)} Excel files found (total {scanned_count} files scanned)"
+                f"Search completed: {len(excel_files)} Excel files found "
+                f"(total {scanned_count} files scanned)"
             )
 
             return {

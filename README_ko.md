@@ -79,11 +79,7 @@ excel-search-mcp/
 │   └── data_formatter.py      # 데이터 변환
 ├── tests/
 │   ├── test_server.py
-│   ├── test_simple.py
-│   └── test_integration.py
-├── examples/
-│   ├── sample_excel_files/
-│   └── usage_examples.py
+│   └── test_simple.py
 ├── sample/                    # 샘플 Excel 파일들
 ├── requirements.txt
 ├── pyproject.toml
@@ -231,7 +227,7 @@ Excel 파일 내에서 특정 텍스트를 검색합니다.
 
 ## 📁 샘플 데이터
 
-프로젝트에는 다양한 종류의 Excel 파일 샘플이 포함되어 있습니다:  
+프로젝트에는 다양한 종류의 Excel 파일 샘플이 포함되어 있습니다:
 from U.S Data.gov - https://catalog.data.gov/dataset/?q=excel
 
 ### 농업 데이터
@@ -291,8 +287,8 @@ from U.S Data.gov - https://catalog.data.gov/dataset/?q=excel
 # 단위 테스트 실행
 pytest tests/test_simple.py
 
-# 통합 테스트 실행
-pytest tests/test_integration.py
+# 서버 테스트 실행
+pytest tests/test_server.py
 
 # 모든 테스트 실행
 pytest tests/

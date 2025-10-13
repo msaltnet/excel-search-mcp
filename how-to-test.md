@@ -183,19 +183,19 @@ MCP 클라이언트에서 다음 명령어들을 테스트할 수 있습니다:
 ### 포매팅 검사
 ```bash
 # Black 포매터 실행
-python -m black src/ tests/ examples/ main.py
+python -m black excel_search_mcp/ tests/ main.py
 
 # isort로 import 정렬
-python -m isort src/ tests/ examples/ main.py
+python -m isort excel_search_mcp/ tests/ main.py
 ```
 
 ### 린터 검사
 ```bash
 # flake8로 코드 스타일 검사
-python -m flake8 src/ tests/ examples/ main.py --ignore=E402
+python -m flake8 excel_search_mcp/ tests/ main.py --ignore=E402
 
 # mypy로 타입 검사
-python -m mypy src/
+python -m mypy excel_search_mcp/
 ```
 
 ### Pre-commit Hook 설정
@@ -226,12 +226,12 @@ python -m pytest tests/ -m "not slow" -v
 ### CI/CD 파이프라인 테스트
 ```bash
 # 코드 품질 검사
-python -m black --check src/ tests/ examples/ main.py
-python -m flake8 src/ tests/ examples/ main.py --ignore=E402
-python -m mypy src/
+python -m black --check excel_search_mcp/ tests/ main.py
+python -m flake8 excel_search_mcp/ tests/ main.py --ignore=E402
+python -m mypy excel_search_mcp/
 
 # 테스트 실행
-python -m pytest tests/ --cov=src --cov-fail-under=90
+python -m pytest tests/ --cov=excel_search_mcp --cov-fail-under=90
 ```
 
 ## 7. 테스트 결과 해석

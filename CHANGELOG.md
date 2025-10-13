@@ -24,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for .xlsx, .xls, .xlsm, .xlsb formats
 - Comprehensive file metadata
 - Configuration management
-- Sample data and examples
-- Unit and integration tests
+- Sample data
+- Unit tests
 
 ### Features
 - `list_excel_files`: Search for Excel files in directories
