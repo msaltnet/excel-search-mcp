@@ -10,7 +10,7 @@ import tempfile
 import os
 
 from src.file_scanner import FileScanner, list_excel_files
-from src.excel_processor import ExcelProcessor, get_excel_summary
+from src.excel_processor import ExcelProcessor
 from src.data_formatter import DataFormatter
 
 
@@ -85,9 +85,10 @@ class TestExcelProcessor:
 
     def test_get_file_info_nonexistent_file(self):
         """Test getting information for non-existent file"""
-        result = get_excel_summary("/nonexistent/file.xlsx")
+        processor = ExcelProcessor()
+        result = processor.validate_file_path("/nonexistent/file.xlsx")
 
-        assert result["success"] is False
+        assert result["valid"] is False
         assert "error" in result
 
 

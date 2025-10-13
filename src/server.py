@@ -20,9 +20,7 @@ from mcp.types import (
 # Local module imports
 from .file_scanner import list_excel_files
 from .excel_processor import (
-    get_excel_summary,
     read_excel_data,
-    get_worksheet_summary,
     search_in_excel,
 )
 from .config_manager import config_manager
@@ -33,34 +31,6 @@ logger = logging.getLogger(__name__)
 
 # MCP server instance creation
 app = Server("excel-search-mcp")
-
-
-# Excel related functions - using actual implementation
-def get_multiple_excel_summaries(file_paths: List[str]) -> Dict[str, Any]:
-    """Function that returns summary information for multiple Excel files"""
-    logger.info("Getting summaries for %d Excel files", len(file_paths))
-
-    summaries = []
-    errors = []
-
-    for file_path in file_paths:
-        try:
-            summary = get_excel_summary(file_path)
-            summaries.append(summary)
-        except Exception as e:
-            logger.error(
-                "Failed to get file summary information: %s - %s", file_path, e
-            )
-            errors.append({"file_path": file_path, "error": str(e)})
-
-    return {
-        "success": True,
-        "total_files": len(file_paths),
-        "successful_files": len(summaries),
-        "failed_files": len(errors),
-        "summaries": summaries,
-        "errors": errors,
-    }
 
 
 # MCP tool definitions
@@ -77,28 +47,6 @@ async def list_tools() -> List[Tool]:
                 "type": "object",
                 "properties": {},
                 "required": [],
-            },
-        ),
-        Tool(
-            name="get_excel_summary",
-            description=(
-                "Get summary information about Excel file(s) including "
-                "worksheets and metadata. Can process single file or multiple files."
-            ),
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "file_path": {
-                        "type": "string",
-                        "description": "Absolute path to a single Excel file",
-                    },
-                    "file_paths": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "List of Excel file paths to process",
-                    },
-                },
-                "anyOf": [{"required": ["file_path"]}, {"required": ["file_paths"]}],
             },
         ),
         Tool(
@@ -156,20 +104,6 @@ async def list_tools() -> List[Tool]:
                 "required": ["file_path", "search_term"],
             },
         ),
-        Tool(
-            name="get_worksheet_summary",
-            description="Get detailed summary of all worksheets in an Excel file",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "file_path": {
-                        "type": "string",
-                        "description": "Absolute path to the Excel file",
-                    }
-                },
-                "required": ["file_path"],
-            },
-        ),
     ]
 
 
@@ -190,61 +124,6 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
                     type="text", text=json.dumps(result, ensure_ascii=False, indent=2)
                 )
             ]
-
-        elif name == "get_excel_summary":
-            file_path = arguments.get("file_path")
-            file_paths = arguments.get("file_paths")
-
-            # Single file processing
-            if file_path and not file_paths:
-                result = get_excel_summary(file_path)
-                return [
-                    TextContent(
-                        type="text",
-                        text=json.dumps(result, ensure_ascii=False, indent=2),
-                    )
-                ]
-
-            # Multiple files processing
-            elif file_paths is not None and not file_path:
-                if not isinstance(file_paths, list) or len(file_paths) == 0:
-                    return [
-                        TextContent(
-                            type="text",
-                            text=json.dumps(
-                                {
-                                    "success": False,
-                                    "error": "file_paths must be a non-empty list",
-                                },
-                                ensure_ascii=False,
-                                indent=2,
-                            ),
-                        )
-                    ]
-
-                result = get_multiple_excel_summaries(file_paths)
-                return [
-                    TextContent(
-                        type="text",
-                        text=json.dumps(result, ensure_ascii=False, indent=2),
-                    )
-                ]
-
-            # Parameter error
-            else:
-                return [
-                    TextContent(
-                        type="text",
-                        text=json.dumps(
-                            {
-                                "success": False,
-                                "error": "Either file_path or file_paths is required, but not both",
-                            },
-                            ensure_ascii=False,
-                            indent=2,
-                        ),
-                    )
-                ]
 
         elif name == "read_excel_data":
             file_path = arguments.get("file_path")
@@ -294,28 +173,6 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
             result = search_in_excel(
                 file_path, search_term, worksheet_name, case_sensitive
             )
-            return [
-                TextContent(
-                    type="text", text=json.dumps(result, ensure_ascii=False, indent=2)
-                )
-            ]
-
-        elif name == "get_worksheet_summary":
-            file_path = arguments.get("file_path")
-
-            if not file_path:
-                return [
-                    TextContent(
-                        type="text",
-                        text=json.dumps(
-                            {"success": False, "error": "file_path is required"},
-                            ensure_ascii=False,
-                            indent=2,
-                        ),
-                    )
-                ]
-
-            result = get_worksheet_summary(file_path)
             return [
                 TextContent(
                     type="text", text=json.dumps(result, ensure_ascii=False, indent=2)

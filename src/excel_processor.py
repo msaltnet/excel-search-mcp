@@ -9,8 +9,6 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 import pandas as pd
 import openpyxl
-from openpyxl.utils import get_column_letter
-from datetime import datetime
 
 from .config_manager import config_manager
 
@@ -87,85 +85,6 @@ class ExcelProcessor:
                 "valid": False,
                 "error": f"File validation error: {str(e)}",
                 "error_code": "VALIDATION_ERROR",
-            }
-
-    def get_file_info(self, file_path: Path) -> Dict[str, Any]:
-        """Get basic information about the Excel file"""
-        try:
-            # Validate file path first
-            validation = self.validate_file_path(str(file_path))
-            if not validation["valid"]:
-                logger.warning(
-                    f"File access denied: {file_path} - {validation['error']}"
-                )
-
-                return {
-                    "success": False,
-                    "error": validation["error"],
-                    "error_code": validation["error_code"],
-                    "file_path": str(file_path),
-                    "work_directory": validation.get("work_directory", ""),
-                }
-
-            if not self.is_supported_file(file_path):
-                return {
-                    "success": False,
-                    "error": f"Unsupported file format: {file_path.suffix}",
-                    "supported_formats": self.supported_formats,
-                }
-
-            # Get workbook information using openpyxl
-            workbook = openpyxl.load_workbook(file_path, read_only=True)
-
-            worksheets = []
-            for i, sheet_name in enumerate(workbook.sheetnames):
-                worksheet = workbook[sheet_name]
-
-                # Calculate worksheet size
-                max_row = worksheet.max_row
-                max_col = worksheet.max_column
-
-                # Check if there is actual data
-                has_data = False
-                if (
-                    max_row > 1 or max_col > 1
-                ):  # Consider having data even if only headers exist
-                    has_data = True
-
-                worksheets.append(
-                    {
-                        "name": sheet_name,
-                        "index": i,
-                        "row_count": max_row,
-                        "column_count": max_col,
-                        "has_data": has_data,
-                    }
-                )
-
-            workbook.close()
-
-            # File metadata
-            stat = file_path.stat()
-
-            return {
-                "success": True,
-                "file_path": str(file_path.absolute()),
-                "file_name": file_path.name,
-                "file_size": stat.st_size,
-                "worksheets": worksheets,
-                "total_worksheets": len(worksheets),
-                "created_time": datetime.fromtimestamp(stat.st_ctime).isoformat() + "Z",
-                "modified_time": datetime.fromtimestamp(stat.st_mtime).isoformat()
-                + "Z",
-                "file_format": file_path.suffix.lower(),
-            }
-
-        except Exception as e:
-            logger.error(f"Failed to get file information: {file_path} - {e}")
-            return {
-                "success": False,
-                "error": f"Cannot get file information: {str(e)}",
-                "file_path": str(file_path.absolute()),
             }
 
     def read_worksheet_data(
@@ -251,93 +170,6 @@ class ExcelProcessor:
                 "file_path": str(file_path.absolute()),
             }
 
-    def get_worksheet_summary(self, file_path: Path) -> Dict[str, Any]:
-        """Get summary information for all worksheets"""
-        try:
-            if not self.is_supported_file(file_path):
-                return {
-                    "success": False,
-                    "error": f"Unsupported file format: {file_path.suffix}",
-                    "supported_formats": self.supported_formats,
-                }
-
-            # Open workbook using openpyxl
-            workbook = openpyxl.load_workbook(file_path, read_only=True)
-
-            worksheets_summary = []
-
-            for i, sheet_name in enumerate(workbook.sheetnames):
-                worksheet = workbook[sheet_name]
-
-                # Worksheet size
-                max_row = worksheet.max_row
-                max_col = worksheet.max_column
-
-                # Check actual data range
-                has_data = False
-                data_range = None
-
-                if max_row > 1 or max_col > 1:
-                    has_data = True
-                    # Find actual range with data
-                    min_row = max_row
-                    min_col = max_col
-
-                    for row in worksheet.iter_rows():
-                        for cell in row:
-                            if cell.value is not None:
-                                min_row = min(min_row, cell.row)
-                                min_col = min(min_col, cell.column)
-
-                    if min_row <= max_row and min_col <= max_col:
-                        data_range = {
-                            "start_row": min_row,
-                            "end_row": max_row,
-                            "start_column": get_column_letter(min_col),
-                            "end_column": get_column_letter(max_col),
-                        }
-
-                # Header information from first row (if available)
-                headers = []
-                if max_row > 0:
-                    header_row = worksheet[1]
-                    headers = [
-                        cell.value for cell in header_row if cell.value is not None
-                    ]
-
-                worksheets_summary.append(
-                    {
-                        "name": sheet_name,
-                        "index": i,
-                        "row_count": max_row,
-                        "column_count": max_col,
-                        "has_data": has_data,
-                        "data_range": data_range,
-                        "headers": headers,
-                        "header_count": len(headers),
-                    }
-                )
-
-            workbook.close()
-
-            return {
-                "success": True,
-                "file_path": str(file_path.absolute()),
-                "file_name": file_path.name,
-                "worksheets": worksheets_summary,
-                "total_worksheets": len(worksheets_summary),
-            }
-
-        except Exception as e:
-            logger.error(
-                f"Failed to get worksheet summary information: {file_path} - {e}"
-            )
-            return {
-                "success": False,
-                "error": f"Cannot get worksheet information: {str(e)}",
-                "file_path": str(file_path.absolute()),
-            }
-
     def search_in_worksheet(
         self,
         file_path: Path,
@@ -416,10 +248,6 @@ class ExcelProcessor:
 
 
 # Convenience functions
-def get_excel_summary(file_path: str) -> Dict[str, Any]:
-    """Convenience function that returns Excel file summary information"""
-    processor = ExcelProcessor()
-    return processor.get_file_info(Path(file_path))
 
 
 def read_excel_data(
@@ -428,12 +256,6 @@ def read_excel_data(
     """Convenience function to read Excel file data"""
     processor = ExcelProcessor()
     return processor.read_worksheet_data(Path(file_path), worksheet_name, max_rows)
-
-
-def get_worksheet_summary(file_path: str) -> Dict[str, Any]:
-    """Convenience function that returns worksheet summary information"""
-    processor = ExcelProcessor()
-    return processor.get_worksheet_summary(Path(file_path))
 
 
 def search_in_excel(

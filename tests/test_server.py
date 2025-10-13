@@ -6,11 +6,10 @@ Tests basic functionality and tool calls of the server.
 
 import json
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from src.server import (
     call_tool,
-    get_multiple_excel_summaries,
     list_tools,
 )
 
@@ -23,14 +22,12 @@ class TestMCPServer:
         """Test tool list return"""
         tools = await list_tools()
 
-        assert len(tools) == 5  # 5 tools available
+        assert len(tools) == 3  # 3 tools available
 
         tool_names = [tool.name for tool in tools]
         assert "list_excel_files" in tool_names
-        assert "get_excel_summary" in tool_names
         assert "read_excel_data" in tool_names
         assert "search_in_excel" in tool_names
-        assert "get_worksheet_summary" in tool_names
 
         # Validate each tool's schema
         for tool in tools:
@@ -80,99 +77,6 @@ class TestMCPServer:
         assert data["directory"] == "/test/directory"
         assert data["recursive"] is True
         assert data["total_files"] == 2
-
-    @pytest.mark.asyncio
-    @patch("src.server.get_excel_summary")
-    async def test_call_tool_get_excel_summary_single_file(
-        self, mock_get_excel_summary
-    ):
-        """Test get_excel_summary tool call (single file)"""
-        # Mock setup
-        mock_get_excel_summary.return_value = {
-            "success": True,
-            "file_path": "/test/file.xlsx",
-            "file_name": "file.xlsx",
-            "file_size": 1024,
-            "worksheets": [
-                {
-                    "name": "Sheet1",
-                    "index": 0,
-                    "row_count": 100,
-                    "column_count": 10,
-                    "has_data": True,
-                }
-            ],
-            "total_worksheets": 1,
-        }
-
-        arguments = {"file_path": "/test/file.xlsx"}
-
-        result = await call_tool("get_excel_summary", arguments)
-
-        assert len(result) == 1
-        assert result[0].type == "text"
-
-        data = json.loads(result[0].text)
-        assert data["success"] is True
-        assert data["file_path"] == "/test/file.xlsx"
-
-    @pytest.mark.asyncio
-    @patch("src.server.get_multiple_excel_summaries")
-    async def test_call_tool_get_excel_summary_multiple_files(self, mock_get_multiple):
-        """Test get_excel_summary tool call (multiple files)"""
-        # Mock setup
-        mock_get_multiple.return_value = {
-            "success": True,
-            "total_files": 3,
-            "successful_files": 3,
-            "failed_files": 0,
-            "summaries": [
-                {"success": True, "file_path": "/test/file1.xlsx"},
-                {"success": True, "file_path": "/test/file2.xlsx"},
-                {"success": True, "file_path": "/test/file3.xlsx"},
-            ],
-            "errors": [],
-        }
-
-        arguments = {
-            "file_paths": ["/test/file1.xlsx", "/test/file2.xlsx", "/test/file3.xlsx"]
-        }
-
-        result = await call_tool("get_excel_summary", arguments)
-
-        assert len(result) == 1
-        assert result[0].type == "text"
-
-        data = json.loads(result[0].text)
-        assert data["success"] is True
-        assert data["total_files"] == 3
-
-    @pytest.mark.asyncio
-    async def test_call_tool_get_excel_summary_invalid_parameters(self):
-        """Test get_excel_summary tool call (invalid parameters)"""
-        # Both provided
-        arguments = {"file_path": "/test/file.xlsx", "file_paths": ["/test/file1.xlsx"]}
-
-        result = await call_tool("get_excel_summary", arguments)
-        data = json.loads(result[0].text)
-        assert data["success"] is False
-        assert "Either file_path or file_paths is required" in data["error"]
-
-        # Neither provided
-        arguments = {}
-
-        result = await call_tool("get_excel_summary", arguments)
-        data = json.loads(result[0].text)
-        assert data["success"] is False
-        assert "Either file_path or file_paths is required" in data["error"]
-
-        # Empty list
-        arguments = {"file_paths": []}
-
-        result = await call_tool("get_excel_summary", arguments)
-        data = json.loads(result[0].text)
-        assert data["success"] is False
-        assert "file_paths must be a non-empty list" in data["error"]
 
     @pytest.mark.asyncio
     @patch("src.server.read_excel_data")
@@ -250,47 +154,6 @@ class TestMCPServer:
         assert data["total_matches"] == 2
 
     @pytest.mark.asyncio
-    @patch("src.server.get_worksheet_summary")
-    async def test_call_tool_get_worksheet_summary(self, mock_get_worksheet_summary):
-        """Test get_worksheet_summary tool call"""
-        # Mock setup
-        mock_get_worksheet_summary.return_value = {
-            "success": True,
-            "file_path": "/test/file.xlsx",
-            "file_name": "file.xlsx",
-            "worksheets": [
-                {
-                    "name": "Sheet1",
-                    "index": 0,
-                    "row_count": 100,
-                    "column_count": 10,
-                    "has_data": True,
-                    "data_range": {
-                        "start_row": 1,
-                        "end_row": 100,
-                        "start_column": "A",
-                        "end_column": "J",
-                    },
-                    "headers": ["ID", "Name", "Value"],
-                    "header_count": 3,
-                }
-            ],
-            "total_worksheets": 1,
-        }
-
-        arguments = {"file_path": "/test/file.xlsx"}
-
-        result = await call_tool("get_worksheet_summary", arguments)
-
-        assert len(result) == 1
-        assert result[0].type == "text"
-
-        data = json.loads(result[0].text)
-        assert data["success"] is True
-        assert data["file_path"] == "/test/file.xlsx"
-        assert data["total_worksheets"] == 1
-
-    @pytest.mark.asyncio
     async def test_call_tool_invalid_tool(self):
         """Test invalid tool call"""
         arguments = {"test": "value"}
@@ -309,7 +172,7 @@ class TestMCPServer:
         """Test missing required parameter"""
         arguments = {}  # file_path missing
 
-        result = await call_tool("get_excel_summary", arguments)
+        result = await call_tool("read_excel_data", arguments)
 
         assert len(result) == 1
         assert result[0].type == "text"
