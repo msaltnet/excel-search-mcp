@@ -1,7 +1,7 @@
 # Excel Search MCP Server Dependencies
 
 # MCP Framework
-mcp>=1.0.0
+mcp>=1.15.0
 
 # Excel Processing (for future implementation)
 openpyxl>=3.1.0
