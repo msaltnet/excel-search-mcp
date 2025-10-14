@@ -49,6 +49,7 @@ playground = "smithery.cli.playground:main"
 # Points to your server function
 [tool.smithery]
 server = "excel_search_mcp.server:create_server"
+target = "local"
 
 [tool.uv]
 package = true
