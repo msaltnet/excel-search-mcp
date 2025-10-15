@@ -2,30 +2,11 @@ startCommand:
   type: stdio
   configSchema:
     type: object
-    required:
-      - workDirectory
-    properties:
-      workDirectory:
-        type: string
-        description: "Excel 파일을 검색할 작업 디렉토리 경로"
-        default: "./sample"
-      recursiveSearch:
-        type: boolean
-        description: "하위 디렉토리까지 재귀적으로 검색할지 여부"
-        default: true
-      maxFilesPerSearch:
-        type: integer
-        description: "검색 시 최대 파일 수"
-        default: 1000
-        minimum: 1
-        maximum: 10000
+    properties: {}
   commandFunction: |
     (config) => ({
       command: 'python',
-      args: ['main.py'],
-      env: {
-        WORK_DIRECTORY: config.workDirectory || './sample',
-        RECURSIVE_SEARCH: config.recursiveSearch ? 'true' : 'false',
-        MAX_FILES_PER_SEARCH: config.maxFilesPerSearch?.toString() || '1000'
+      args: ['main.py']
       }
     })
+  exampleConfig: {}
