@@ -1,12 +1,2 @@
-startCommand:
-  type: stdio
-  configSchema:
-    type: object
-    properties: {}
-  commandFunction: |
-    (config) => ({
-      command: 'python',
-      args: ['main.py']
-      }
-    })
-  exampleConfig: {}
+runtime: "python"
+target: "local"
