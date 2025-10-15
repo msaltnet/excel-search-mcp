@@ -2,6 +2,7 @@
 
 A Model Context Protocol (MCP) server for searching and reading Excel files from your local PC
 
+[![smithery badge](https://smithery.ai/badge/@msaltnet/excel-search-mcp)](https://smithery.ai/server/@msaltnet/excel-search-mcp)
 [![Smithery](https://img.shields.io/badge/Available%20on-Smithery-blue)](https://smithery.ai/)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -93,6 +94,14 @@ excel-search-mcp/
 ```
 
 ## 🚀 Installation & Setup
+
+### Installing via Smithery
+
+To install Excel Search automatically via [Smithery](https://smithery.ai/server/@msaltnet/excel-search-mcp):
+
+```bash
+npx -y @smithery/cli install @msaltnet/excel-search-mcp
+```
 
 ### 1. Install Dependencies
 
