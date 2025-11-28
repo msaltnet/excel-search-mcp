@@ -15,6 +15,8 @@ This project provides a Model Context Protocol (MCP) server that enables AI mode
 
 ## 🎯 Key Features
 
+- **Dual Handler Support**: Switch between `openpyxl` and `win32com` adapters
+- **DRM Protection**: Use `win32com` handler to read DRM-protected Excel files (Windows only)
 - **Excel File Search**: Recursively search for Excel files in specified directories
 - **File Metadata**: Provide comprehensive metadata including file paths, sizes, modification dates
 - **Data Extraction**: Convert Excel file contents to JSON format for AI consumption
@@ -102,12 +104,13 @@ pip install -r requirements.txt
 
 ### 2. Configure Settings
 
-Create a `config.json` file to set your work directory:
+Create a `config.json` file to set your work directory and handler:
 
 ```json
 {
   "work_directory": "/path/to/your/excel/files",
   "excel": {
+    "handler": "openpyxl",
     "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
     "max_file_size_mb": 100,
     "max_files_per_search": 1000,
@@ -115,6 +118,16 @@ Create a `config.json` file to set your work directory:
   }
 }
 ```
+
+#### Handler Options
+
+- **`"openpyxl"`** (Default): Fast, cross-platform, works without Excel installation
+  - ✅ Pros: Fast, no Excel required, works on Mac/Linux
+  - ❌ Cons: Cannot read DRM-protected files
+
+- **`"win32com"`**: For DRM-protected Excel files
+  - ✅ Pros: Can read DRM-protected files, 100% Excel compatibility
+  - ❌ Cons: Windows-only, requires Excel installation, slower
 
 ### 3. MCP Client Configuration
 

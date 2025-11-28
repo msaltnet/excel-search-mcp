@@ -11,16 +11,41 @@ from typing import Any, Dict, Optional
 import pandas as pd
 
 from .config_manager import config_manager
+from .adapters.adapter_base import ExcelAdapter
+from .adapters.adapter_openpyxl import OpenpyxlAdapter
+from .adapters.sheet_model import SheetModel
 
 logger = logging.getLogger(__name__)
 
 
 class ExcelProcessor:
-    """Excel file processing class"""
+    """Excel file processing class with adapter pattern"""
 
     def __init__(self) -> None:
         self.supported_formats = config_manager.get_supported_extensions()
         self.config_manager = config_manager
+        self.adapter: Optional[ExcelAdapter] = None
+        self._initialize_adapter()
+
+    def _initialize_adapter(self) -> None:
+        """Initialize Excel adapter based on config"""
+        handler = self.config_manager.get_excel_handler()
+
+        if handler == "win32com":
+            try:
+                from .adapters.adapter_win32 import Win32Adapter
+
+                self.adapter = Win32Adapter()
+                logger.info("Using Win32 COM adapter (for DRM-protected files)")
+            except ImportError as e:
+                logger.warning(
+                    f"Win32 adapter not available: {e}. Falling back to openpyxl"
+                )
+                self.adapter = OpenpyxlAdapter()
+        else:
+            # Default to openpyxl
+            self.adapter = OpenpyxlAdapter()
+            logger.info("Using openpyxl adapter (for regular Excel files)")
 
     def is_supported_file(self, file_path: Path) -> bool:
         """Check if the file format is supported"""
@@ -97,7 +122,7 @@ class ExcelProcessor:
         max_rows: Optional[int] = None,
         include_headers: bool = True,
     ) -> Dict[str, Any]:
-        """Read worksheet data and convert to JSON"""
+        """Read worksheet data using adapter and convert to JSON"""
         try:
             if not self.is_supported_file(file_path):
                 return {
@@ -106,15 +131,30 @@ class ExcelProcessor:
                     "supported_formats": self.supported_formats,
                 }
 
-            # Read Excel file using pandas
-            if worksheet_name:
-                df = pd.read_excel(
-                    file_path, sheet_name=worksheet_name, engine="openpyxl"
-                )
-            else:
-                df = pd.read_excel(
-                    file_path, sheet_name=0, engine="openpyxl"
-                )  # First sheet
+            if self.adapter is None:
+                return {
+                    "success": False,
+                    "error": "Excel adapter not initialized",
+                }
+
+            # Get sheet name if not provided
+            if worksheet_name is None:
+                sheets = self.adapter.list_sheets_from_file(file_path)
+                worksheet_name = sheets[0] if sheets else None
+
+            if not worksheet_name:
+                return {
+                    "success": False,
+                    "error": "No sheets found in Excel file",
+                }
+
+            # Read sheet using adapter
+            sheet_model = self.adapter.get_sheet_model_from_file(
+                file_path, worksheet_name
+            )
+
+            # Convert SheetModel to DataFrame
+            df = pd.DataFrame(sheet_model.values)
 
             # Limit number of rows
             if max_rows and len(df) > max_rows:
@@ -124,26 +164,26 @@ class ExcelProcessor:
             df = df.where(pd.notnull(df), None)
 
             # Convert data to dictionary
-            if include_headers:
-                # Use column names as headers
-                headers = df.columns.tolist()
+            if include_headers and len(df) > 0:
+                # First row as headers
+                headers = df.iloc[0].tolist()
+                df = df.iloc[1:]
+                df.columns = headers
                 rows = df.values.tolist()
             else:
-                # Include all data with index
-                headers = ["Index"] + df.columns.tolist()
-                rows = []
-                for idx, row in df.iterrows():
-                    rows.append([idx] + row.tolist())
+                # All data without headers
+                headers = list(range(len(df.columns))) if len(df) > 0 else []
+                rows = df.values.tolist()
 
             # Collect data type information
             data_types = {}
             for i, col in enumerate(df.columns):
-                data_types[col] = str(df[col].dtype)
+                data_types[str(col)] = str(df[col].dtype)
 
             return {
                 "success": True,
                 "file_path": str(file_path.absolute()),
-                "worksheet_name": worksheet_name or df.index.name or "Sheet1",
+                "worksheet_name": worksheet_name,
                 "headers": headers,
                 "rows": rows,
                 "row_count": len(rows),
@@ -180,7 +220,7 @@ class ExcelProcessor:
         worksheet_name: Optional[str] = None,
         case_sensitive: bool = False,
     ) -> Dict[str, Any]:
-        """Search for specific text in worksheet"""
+        """Search for specific text in worksheet using adapter"""
         try:
             if not self.is_supported_file(file_path):
                 return {
@@ -189,13 +229,30 @@ class ExcelProcessor:
                     "supported_formats": self.supported_formats,
                 }
 
-            # Read Excel file using pandas
-            if worksheet_name:
-                df = pd.read_excel(
-                    file_path, sheet_name=worksheet_name, engine="openpyxl"
-                )
-            else:
-                df = pd.read_excel(file_path, sheet_name=0, engine="openpyxl")
+            if self.adapter is None:
+                return {
+                    "success": False,
+                    "error": "Excel adapter not initialized",
+                }
+
+            # Get sheet name if not provided
+            if worksheet_name is None:
+                sheets = self.adapter.list_sheets_from_file(file_path)
+                worksheet_name = sheets[0] if sheets else None
+
+            if not worksheet_name:
+                return {
+                    "success": False,
+                    "error": "No sheets found in Excel file",
+                }
+
+            # Read sheet using adapter
+            sheet_model = self.adapter.get_sheet_model_from_file(
+                file_path, worksheet_name
+            )
+
+            # Convert SheetModel to DataFrame
+            df = pd.DataFrame(sheet_model.values)
 
             # Execute search
             if not case_sensitive:
@@ -205,33 +262,24 @@ class ExcelProcessor:
             matches = []
             for col_idx, col in enumerate(df.columns):
                 for row_idx, value in enumerate(df[col]):
-                    if case_sensitive:
-                        if search_term in str(value):
-                            matches.append(
-                                {
-                                    "row": row_idx + 1,  # 1-based indexing
-                                    "column": col,
-                                    "column_index": col_idx,
-                                    "value": str(value),
-                                    "cell_address": f"{col}{row_idx + 1}",
-                                }
-                            )
-                    else:
-                        if search_term in str(value).lower():
-                            matches.append(
-                                {
-                                    "row": row_idx + 1,
-                                    "column": col,
-                                    "column_index": col_idx,
-                                    "value": str(value),
-                                    "cell_address": f"{col}{row_idx + 1}",
-                                }
-                            )
+                    str_value = str(value)
+                    if not case_sensitive:
+                        str_value = str_value.lower()
+
+                    if search_term in str_value:
+                        matches.append(
+                            {
+                                "row": row_idx + 1,  # 1-based indexing
+                                "column": str(col),
+                                "column_index": col_idx,
+                                "value": str(value),
+                            }
+                        )
 
             return {
                 "success": True,
                 "file_path": str(file_path.absolute()),
-                "worksheet_name": worksheet_name or "Sheet1",
+                "worksheet_name": worksheet_name,
                 "search_term": search_term,
                 "case_sensitive": case_sensitive,
                 "total_matches": len(matches),
@@ -245,6 +293,14 @@ class ExcelProcessor:
                 "error": f"Error occurred during search: {str(e)}",
                 "file_path": str(file_path.absolute()),
             }
+
+    def __del__(self) -> None:
+        """Cleanup adapter on deletion"""
+        if self.adapter is not None:
+            try:
+                self.adapter.shutdown()
+            except Exception as e:
+                logger.debug(f"Error during adapter shutdown: {e}")
 
 
 # Convenience functions

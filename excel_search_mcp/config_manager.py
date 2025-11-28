@@ -52,6 +52,7 @@ class ConfigManager:
                 "max_search_depth": 10,
             },
             "excel": {
+                "handler": "openpyxl",  # "openpyxl" or "win32com"
                 "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
                 "max_file_size_mb": 100,
                 "max_files_per_search": 1000,
@@ -84,6 +85,11 @@ class ConfigManager:
         """재귀 검색 여부를 반환합니다."""
         result = self.config.get("excel", {}).get("recursive_search", True)
         return bool(result)
+
+    def get_excel_handler(self) -> str:
+        """Excel 파일 처리 핸들러를 반환합니다 ('openpyxl' or 'win32com')."""
+        result = self.config.get("excel", {}).get("handler", "openpyxl")
+        return str(result).lower()
 
     def is_path_within_work_directory(self, path: str) -> bool:
         """경로가 작업 디렉토리 내에 있는지 확인합니다."""
