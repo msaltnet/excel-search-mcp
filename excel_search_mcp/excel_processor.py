@@ -14,6 +14,7 @@ from .config_manager import config_manager
 from .adapters.adapter_base import ExcelAdapter
 from .adapters.adapter_openpyxl import OpenpyxlAdapter
 from .adapters.sheet_model import SheetModel
+from .data_formatter import DataFormatter
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class ExcelProcessor:
         self.supported_formats = config_manager.get_supported_extensions()
         self.config_manager = config_manager
         self.adapter: Optional[ExcelAdapter] = None
+        self.formatter = DataFormatter()
         self._initialize_adapter()
 
     def _initialize_adapter(self) -> None:
@@ -163,17 +165,23 @@ class ExcelProcessor:
             # Convert NaN values to None
             df = df.where(pd.notnull(df), None)
 
-            # Convert data to dictionary
+            # Convert data to dictionary with JSON serialization
             if include_headers and len(df) > 0:
                 # First row as headers
-                headers = df.iloc[0].tolist()
+                headers = [self.formatter.format_value(v) for v in df.iloc[0]]
                 df = df.iloc[1:]
                 df.columns = headers
-                rows = df.values.tolist()
+                # Format each cell value for JSON serialization
+                rows = [
+                    [self.formatter.format_value(v) for v in row] for row in df.values
+                ]
             else:
                 # All data without headers
                 headers = list(range(len(df.columns))) if len(df) > 0 else []
-                rows = df.values.tolist()
+                # Format each cell value for JSON serialization
+                rows = [
+                    [self.formatter.format_value(v) for v in row] for row in df.values
+                ]
 
             # Collect data type information
             data_types = {}
@@ -272,7 +280,7 @@ class ExcelProcessor:
                                 "row": row_idx + 1,  # 1-based indexing
                                 "column": str(col),
                                 "column_index": col_idx,
-                                "value": str(value),
+                                "value": self.formatter.format_value(value),
                             }
                         )
 
