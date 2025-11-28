@@ -11,7 +11,7 @@ from typing import Optional
 from mcp.server.fastmcp import Context, FastMCP
 
 from .config_manager import config_manager
-from .excel_processor import read_excel_data, search_in_excel
+from .excel_processor import list_excel_sheets, read_excel_data, search_in_excel
 
 # Local module imports
 from .file_scanner import list_excel_files
@@ -97,6 +97,27 @@ def create_server() -> FastMCP:
             return json.dumps(result, ensure_ascii=False, indent=2)
         except Exception as e:
             logger.error("Error in search_in_excel_tool: %s", str(e))
+            return json.dumps(
+                {"success": False, "error": f"Tool execution failed: {str(e)}"},
+                ensure_ascii=False,
+                indent=2,
+            )
+
+    @server.tool()
+    def list_excel_sheets_tool(file_path: str, ctx: Context) -> str:
+        """List all sheet names in an Excel file."""
+        try:
+            if not file_path:
+                return json.dumps(
+                    {"success": False, "error": "file_path is required"},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+
+            result = list_excel_sheets(file_path)
+            return json.dumps(result, ensure_ascii=False, indent=2)
+        except Exception as e:
+            logger.error("Error in list_excel_sheets_tool: %s", str(e))
             return json.dumps(
                 {"success": False, "error": f"Tool execution failed: {str(e)}"},
                 ensure_ascii=False,

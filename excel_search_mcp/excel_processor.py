@@ -221,6 +221,52 @@ class ExcelProcessor:
                 "file_path": str(file_path.absolute()),
             }
 
+    def list_sheets(self, file_path: Path) -> Dict[str, Any]:
+        """List all sheet names from Excel file using adapter"""
+        try:
+            if not self.is_supported_file(file_path):
+                return {
+                    "success": False,
+                    "error": f"Unsupported file format: {file_path.suffix}",
+                    "supported_formats": self.supported_formats,
+                }
+
+            if self.adapter is None:
+                return {
+                    "success": False,
+                    "error": "Excel adapter not initialized",
+                }
+
+            # Get all sheet names using adapter
+            sheets = self.adapter.list_sheets_from_file(file_path)
+
+            return {
+                "success": True,
+                "file_path": str(file_path.absolute()),
+                "sheets": sheets,
+                "sheet_count": len(sheets),
+            }
+
+        except FileNotFoundError:
+            return {
+                "success": False,
+                "error": f"File not found: {file_path}",
+                "file_path": str(file_path.absolute()),
+            }
+        except PermissionError:
+            return {
+                "success": False,
+                "error": f"No permission to access file: {file_path}",
+                "file_path": str(file_path.absolute()),
+            }
+        except Exception as e:
+            logger.error(f"Failed to list sheets: {file_path} - {e}")
+            return {
+                "success": False,
+                "error": f"Cannot list sheets: {str(e)}",
+                "file_path": str(file_path.absolute()),
+            }
+
     def search_in_worksheet(
         self,
         file_path: Path,
@@ -333,3 +379,15 @@ def search_in_excel(
     return processor.search_in_worksheet(
         Path(file_path), search_term, worksheet_name, case_sensitive
     )
+
+
+def list_excel_sheets(file_path: str) -> Dict[str, Any]:
+    """Convenience function to list Excel file sheets"""
+    processor = ExcelProcessor()
+
+    # Validate file path first
+    validation = processor.validate_file_path(file_path)
+    if not validation.get("valid"):
+        return validation
+
+    return processor.list_sheets(Path(file_path))
