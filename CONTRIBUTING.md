@@ -15,9 +15,9 @@ Thank you for your interest in contributing to Excel Search MCP! This document p
 Before submitting a pull request, please ensure:
 
 1. All tests pass: `pytest tests/`
-2. Code follows style guidelines: `black src/ tests/` and `isort src/ tests/`
-3. No linting errors: `flake8 src/ tests/`
-4. Type checking passes: `mypy src/`
+2. Code follows style guidelines: `black excel_search_mcp/ tests/` and `isort excel_search_mcp/ tests/`
+3. No linting errors: `flake8 excel_search_mcp/ tests/`
+4. Type checking passes: `mypy excel_search_mcp/`
 
 ## 📝 Code Style
 

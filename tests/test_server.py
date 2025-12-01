@@ -50,6 +50,30 @@ class TestMCPServer:
         assert isinstance(config_manager.get_max_files_per_search(), int)
         assert isinstance(config_manager.get_recursive_search(), bool)
 
+    def test_list_excel_sheets_function(self) -> None:
+        """Test list_excel_sheets function"""
+        from pathlib import Path
+
+        from excel_search_mcp.excel_processor import list_excel_sheets
+
+        # Test with a sample file
+        sample_file = Path("sample/Apples-2022.xlsx")
+        if sample_file.exists():
+            result = list_excel_sheets(str(sample_file.absolute()))
+
+            # Check result structure
+            assert isinstance(result, dict)
+            assert "success" in result
+
+            # If successful, check returned data
+            if result.get("success"):
+                assert "sheets" in result
+                assert "sheet_count" in result
+                assert isinstance(result["sheets"], list)
+                assert isinstance(result["sheet_count"], int)
+                assert result["sheet_count"] == len(result["sheets"])
+                assert result["sheet_count"] > 0  # Should have at least one sheet
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

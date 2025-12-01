@@ -15,6 +15,8 @@ This project provides a Model Context Protocol (MCP) server that enables AI mode
 
 ## 🎯 Key Features
 
+- **Dual Handler Support**: Switch between `openpyxl` and `win32com` adapters
+- **DRM Protection**: Use `win32com` handler to read DRM-protected Excel files (Windows only)
 - **Excel File Search**: Recursively search for Excel files in specified directories
 - **File Metadata**: Provide comprehensive metadata including file paths, sizes, modification dates
 - **Data Extraction**: Convert Excel file contents to JSON format for AI consumption
@@ -102,12 +104,13 @@ pip install -r requirements.txt
 
 ### 2. Configure Settings
 
-Create a `config.json` file to set your work directory:
+Create a `config.json` file to set your work directory and handler:
 
 ```json
 {
   "work_directory": "/path/to/your/excel/files",
   "excel": {
+    "handler": "openpyxl",
     "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
     "max_file_size_mb": 100,
     "max_files_per_search": 1000,
@@ -115,6 +118,16 @@ Create a `config.json` file to set your work directory:
   }
 }
 ```
+
+#### Handler Options
+
+- **`"openpyxl"`** (Default): Fast, cross-platform, works without Excel installation
+  - ✅ Pros: Fast, no Excel required, works on Mac/Linux
+  - ❌ Cons: Cannot read DRM-protected files
+
+- **`"win32com"`**: For DRM-protected Excel files
+  - ✅ Pros: Can read DRM-protected files, 100% Excel compatibility
+  - ❌ Cons: Windows-only, requires Excel installation, slower
 
 ### 3. MCP Client Configuration
 
@@ -175,9 +188,9 @@ Returns a list of Excel files in the specified directory.
 Reads Excel file data and converts it to JSON format.
 
 **Parameters**:
-- `file_path` (required): Absolute path to the Excel file
-- `worksheet_name` (optional): Name of worksheet to read (default: first worksheet)
-- `max_rows` (optional): Maximum number of rows to read (default: all rows)
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
+- `worksheet_name` (optional): Name of worksheet to read. If not specified, reads the first sheet in the workbook.
+- `max_rows` (optional): Maximum number of rows to read. If not specified, reads all rows. Note: The first row is always treated as headers and excluded from the row count.
 
 **Return Value**:
 ```json
@@ -204,9 +217,9 @@ Reads Excel file data and converts it to JSON format.
 Searches for specific text within Excel files.
 
 **Parameters**:
-- `file_path` (required): Absolute path to the Excel file
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
 - `search_term` (required): Text to search for
-- `worksheet_name` (optional): Specific worksheet to search
+- `worksheet_name` (optional): Name of the worksheet to search in. If not specified, searches the first sheet in the workbook.
 - `case_sensitive` (optional): Whether search should be case sensitive (default: false)
 
 **Return Value**:
@@ -227,6 +240,22 @@ Searches for specific text within Excel files.
       "cell_address": "A1"
     }
   ]
+}
+```
+
+### 4. `list_excel_sheets`
+Returns a list of all sheet names in an Excel file.
+
+**Parameters**:
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
+
+**Return Value**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "sheets": ["Sheet1", "Sheet2", "Data"],
+  "sheet_count": 3
 }
 ```
 

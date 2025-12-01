@@ -6,6 +6,7 @@
   },
   "work_directory": "C:\\01_code\\excel-search-mcp\\sample",
   "excel": {
+    "handler": "openpyxl",
     "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
     "max_file_size_mb": 100,
     "max_files_per_search": 1000,

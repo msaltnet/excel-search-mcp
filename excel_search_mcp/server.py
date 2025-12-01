@@ -6,12 +6,13 @@ Main module of MCP server for Excel file search and processing
 
 import json
 import logging
-from typing import Optional
+from typing import Annotated, Optional
 
 from mcp.server.fastmcp import Context, FastMCP
+from pydantic import Field
 
 from .config_manager import config_manager
-from .excel_processor import read_excel_data, search_in_excel
+from .excel_processor import list_excel_sheets, read_excel_data, search_in_excel
 
 # Local module imports
 from .file_scanner import list_excel_files
@@ -47,10 +48,37 @@ def create_server() -> FastMCP:
 
     @server.tool()
     def read_excel_data_tool(
-        file_path: str,
+        file_path: Annotated[
+            str,
+            Field(
+                description=(
+                    "Path to the Excel file to read. "
+                    "Must be within the configured work_directory."
+                )
+            ),
+        ],
         ctx: Context,
-        worksheet_name: Optional[str] = None,
-        max_rows: Optional[int] = None,
+        worksheet_name: Annotated[
+            Optional[str],
+            Field(
+                description=(
+                    "Name of the worksheet to read. If None, "
+                    "reads the first sheet in the workbook."
+                )
+            ),
+        ] = None,
+        max_rows: Annotated[
+            Optional[int],
+            Field(
+                description=(
+                    "Maximum number of rows to read from the sheet. "
+                    "If None, reads all rows. "
+                    "The first row is always treated as headers "
+                    "and excluded from the row count."
+                ),
+                ge=1,
+            ),
+        ] = None,
     ) -> str:
         """Read Excel file data and convert it to JSON format."""
         try:
@@ -73,11 +101,43 @@ def create_server() -> FastMCP:
 
     @server.tool()
     def search_in_excel_tool(
-        file_path: str,
-        search_term: str,
+        file_path: Annotated[
+            str,
+            Field(
+                description=(
+                    "Path to the Excel file to search in. "
+                    "Must be within the configured work_directory."
+                )
+            ),
+        ],
+        search_term: Annotated[
+            str,
+            Field(
+                description=(
+                    "Text to search for within the Excel file. "
+                    "Searches all cell values in the specified worksheet."
+                )
+            ),
+        ],
         ctx: Context,
-        worksheet_name: Optional[str] = None,
-        case_sensitive: bool = False,
+        worksheet_name: Annotated[
+            Optional[str],
+            Field(
+                description=(
+                    "Name of the worksheet to search in. "
+                    "If None, searches the first sheet in the workbook."
+                )
+            ),
+        ] = None,
+        case_sensitive: Annotated[
+            bool,
+            Field(
+                description=(
+                    "Whether to perform case-sensitive search. "
+                    "Default is False (case-insensitive)."
+                )
+            ),
+        ] = False,
     ) -> str:
         """Search for specific text within Excel file(s)."""
         try:
@@ -97,6 +157,38 @@ def create_server() -> FastMCP:
             return json.dumps(result, ensure_ascii=False, indent=2)
         except Exception as e:
             logger.error("Error in search_in_excel_tool: %s", str(e))
+            return json.dumps(
+                {"success": False, "error": f"Tool execution failed: {str(e)}"},
+                ensure_ascii=False,
+                indent=2,
+            )
+
+    @server.tool()
+    def list_excel_sheets_tool(
+        file_path: Annotated[
+            str,
+            Field(
+                description=(
+                    "Path to the Excel file. "
+                    "Must be within the configured work_directory."
+                )
+            ),
+        ],
+        ctx: Context,
+    ) -> str:
+        """List all sheet names in an Excel file."""
+        try:
+            if not file_path:
+                return json.dumps(
+                    {"success": False, "error": "file_path is required"},
+                    ensure_ascii=False,
+                    indent=2,
+                )
+
+            result = list_excel_sheets(file_path)
+            return json.dumps(result, ensure_ascii=False, indent=2)
+        except Exception as e:
+            logger.error("Error in list_excel_sheets_tool: %s", str(e))
             return json.dumps(
                 {"success": False, "error": f"Tool execution failed: {str(e)}"},
                 ensure_ascii=False,

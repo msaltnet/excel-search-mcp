@@ -10,6 +10,8 @@
 
 ## 🎯 주요 기능
 
+- **이중 핸들러 지원**: `openpyxl` 또는 `win32com` 어댑터 선택 가능
+- **DRM 보호 파일 지원**: `win32com` 핸들러로 DRM이 걸린 Excel 파일 읽기 (Windows 전용)
 - **엑셀 파일 검색**: 지정된 디렉토리에서 Excel 파일들을 재귀적으로 검색
 - **파일 목록 제공**: 발견된 Excel 파일들의 절대 경로, 크기, 수정일시 등 메타데이터 제공
 - **데이터 추출**: Excel 파일의 내용을 JSON 형태로 변환하여 제공
@@ -97,12 +99,13 @@ pip install -r requirements.txt
 
 ### 2. 설정 파일 구성
 
-`config.json` 파일을 생성하여 작업 디렉토리를 설정합니다:
+`config.json` 파일을 생성하여 작업 디렉토리와 핸들러를 설정합니다:
 
 ```json
 {
   "work_directory": "/path/to/your/excel/files",
   "excel": {
+    "handler": "openpyxl",
     "supported_extensions": [".xlsx", ".xls", ".xlsm", ".xlsb"],
     "max_file_size_mb": 100,
     "max_files_per_search": 1000,
@@ -110,6 +113,16 @@ pip install -r requirements.txt
   }
 }
 ```
+
+#### 핸들러 옵션
+
+- **`"openpyxl"`** (기본값): 빠르고 크로스 플랫폼, Excel 설치 불필요
+  - ✅ 장점: 빠른 속도, Excel 불필요, Mac/Linux 지원
+  - ❌ 단점: DRM 보호된 파일 읽기 불가
+
+- **`"win32com"`**: DRM 보호된 Excel 파일용
+  - ✅ 장점: DRM 파일 읽기 가능, 100% Excel 호환성
+  - ❌ 단점: Windows 전용, Excel 설치 필요, 느린 속도
 
 ### 3. MCP 클라이언트 설정
 
@@ -170,9 +183,9 @@ pip install -r requirements.txt
 Excel 파일의 데이터를 JSON으로 읽어옵니다.
 
 **매개변수**:
-- `file_path` (필수): Excel 파일의 절대 경로
-- `worksheet_name` (선택): 읽을 워크시트 이름 (기본값: 첫 번째 워크시트)
-- `max_rows` (선택): 읽을 최대 행 수 (기본값: 모든 행)
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
+- `worksheet_name` (선택): 읽을 워크시트 이름. 지정하지 않으면 첫 번째 시트를 읽습니다.
+- `max_rows` (선택): 읽을 최대 행 수. 지정하지 않으면 모든 행을 읽습니다. 참고: 첫 번째 행은 항상 헤더로 처리되며 행 수에서 제외됩니다.
 
 **반환값**:
 ```json
@@ -199,9 +212,9 @@ Excel 파일의 데이터를 JSON으로 읽어옵니다.
 Excel 파일 내에서 특정 텍스트를 검색합니다.
 
 **매개변수**:
-- `file_path` (필수): Excel 파일의 절대 경로
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
 - `search_term` (필수): 검색할 텍스트
-- `worksheet_name` (선택): 검색할 워크시트 이름
+- `worksheet_name` (선택): 검색할 워크시트 이름. 지정하지 않으면 첫 번째 시트를 검색합니다.
 - `case_sensitive` (선택): 대소문자 구분 여부 (기본값: false)
 
 **반환값**:
@@ -222,6 +235,22 @@ Excel 파일 내에서 특정 텍스트를 검색합니다.
       "cell_address": "A1"
     }
   ]
+}
+```
+
+### 4. `list_excel_sheets`
+Excel 파일의 모든 시트 이름 목록을 반환합니다.
+
+**매개변수**:
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
+
+**반환값**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "sheets": ["Sheet1", "Sheet2", "Data"],
+  "sheet_count": 3
 }
 ```
 
