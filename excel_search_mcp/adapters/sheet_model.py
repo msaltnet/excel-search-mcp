@@ -19,7 +19,9 @@ class CellRange:
 
     @property
     def address_a1(self) -> str:
-        return f"{col_to_name(self.start_col)}{self.start_row}:{col_to_name(self.end_col)}{self.end_row}"
+        start = f"{col_to_name(self.start_col)}{self.start_row}"
+        end = f"{col_to_name(self.end_col)}{self.end_row}"
+        return f"{start}:{end}"
 
 
 @dataclass

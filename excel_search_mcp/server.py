@@ -51,20 +51,31 @@ def create_server() -> FastMCP:
         file_path: Annotated[
             str,
             Field(
-                description="Path to the Excel file to read. Can be absolute or relative path. Must be within the configured work_directory."
+                description=(
+                    "Path to the Excel file to read. "
+                    "Must be within the configured work_directory."
+                )
             ),
         ],
         ctx: Context,
         worksheet_name: Annotated[
             Optional[str],
             Field(
-                description="Name of the worksheet to read. If None, reads the first sheet in the workbook."
+                description=(
+                    "Name of the worksheet to read. If None, "
+                    "reads the first sheet in the workbook."
+                )
             ),
         ] = None,
         max_rows: Annotated[
             Optional[int],
             Field(
-                description="Maximum number of rows to read from the sheet. If None, reads all rows. The first row is always treated as headers and excluded from the row count.",
+                description=(
+                    "Maximum number of rows to read from the sheet. "
+                    "If None, reads all rows. "
+                    "The first row is always treated as headers "
+                    "and excluded from the row count."
+                ),
                 ge=1,
             ),
         ] = None,
@@ -93,26 +104,38 @@ def create_server() -> FastMCP:
         file_path: Annotated[
             str,
             Field(
-                description="Path to the Excel file to search in. Can be absolute or relative path. Must be within the configured work_directory."
+                description=(
+                    "Path to the Excel file to search in. "
+                    "Must be within the configured work_directory."
+                )
             ),
         ],
         search_term: Annotated[
             str,
             Field(
-                description="Text to search for within the Excel file. Searches all cell values in the specified worksheet."
+                description=(
+                    "Text to search for within the Excel file. "
+                    "Searches all cell values in the specified worksheet."
+                )
             ),
         ],
         ctx: Context,
         worksheet_name: Annotated[
             Optional[str],
             Field(
-                description="Name of the worksheet to search in. If None, searches the first sheet in the workbook."
+                description=(
+                    "Name of the worksheet to search in. "
+                    "If None, searches the first sheet in the workbook."
+                )
             ),
         ] = None,
         case_sensitive: Annotated[
             bool,
             Field(
-                description="Whether to perform case-sensitive search. Default is False (case-insensitive)."
+                description=(
+                    "Whether to perform case-sensitive search. "
+                    "Default is False (case-insensitive)."
+                )
             ),
         ] = False,
     ) -> str:
@@ -145,7 +168,10 @@ def create_server() -> FastMCP:
         file_path: Annotated[
             str,
             Field(
-                description="Path to the Excel file. Can be absolute or relative path. Must be within the configured work_directory."
+                description=(
+                    "Path to the Excel file. "
+                    "Must be within the configured work_directory."
+                )
             ),
         ],
         ctx: Context,

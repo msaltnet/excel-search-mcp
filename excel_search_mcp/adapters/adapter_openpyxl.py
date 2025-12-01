@@ -14,7 +14,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 
 from .adapter_base import ExcelAdapter
-from .sheet_model import SheetModel, CellRange
+from .sheet_model import CellRange, SheetModel
 
 
 class OpenpyxlAdapter(ExcelAdapter):
@@ -94,7 +94,9 @@ class OpenpyxlAdapter(ExcelAdapter):
                     col_idx = max_col - min_col
                     if all(
                         row[col_idx] is None
-                        or (isinstance(row[col_idx], str) and row[col_idx].strip() == "")
+                        or (
+                            isinstance(row[col_idx], str) and row[col_idx].strip() == ""
+                        )
                         for row in values_2d
                     ):
                         for row in values_2d:
@@ -112,7 +114,7 @@ class OpenpyxlAdapter(ExcelAdapter):
                 )
 
             used_range = CellRange(min_row, min_col, max_row, max_col)
-            merged_regions = []
+            merged_regions: list[CellRange] = []
 
             return SheetModel(
                 name=sheet_name,
