@@ -4,8 +4,8 @@ Excel Adapter Base - Common interface for Excel adapters
 
 from __future__ import annotations
 
-from typing import Protocol
 from pathlib import Path
+from typing import Protocol
 
 from .sheet_model import SheetModel
 

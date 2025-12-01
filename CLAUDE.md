@@ -185,8 +185,7 @@ else:
 @dataclass
 class SheetModel:
     values: list[list[Any]]      # 2D array of cell values
-    used_range: tuple[int, int]  # (rows, columns)
-    merged_regions: list[tuple]  # Merged cell ranges
+    used_range: CellRange        # CellRange(start_row, start_col, end_row, end_col)
 ```
 
 **Tool Response Format**: Always return JSON strings with `ensure_ascii=False`

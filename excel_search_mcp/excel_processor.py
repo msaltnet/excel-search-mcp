@@ -10,10 +10,10 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 
-from .config_manager import config_manager
 from .adapters.adapter_base import ExcelAdapter
 from .adapters.adapter_openpyxl import OpenpyxlAdapter
-from .adapters.sheet_model import SheetModel
+from .adapters.sheet_model import col_to_name
+from .config_manager import config_manager
 from .data_formatter import DataFormatter
 
 logger = logging.getLogger(__name__)
@@ -321,12 +321,14 @@ class ExcelProcessor:
                         str_value = str_value.lower()
 
                     if search_term in str_value:
+                        cell_address = f"{col_to_name(col_idx + 1)}{row_idx + 1}"
                         matches.append(
                             {
                                 "row": row_idx + 1,  # 1-based indexing
                                 "column": str(col),
                                 "column_index": col_idx,
                                 "value": self.formatter.format_value(value),
+                                "cell_address": cell_address,
                             }
                         )
 
@@ -348,13 +350,17 @@ class ExcelProcessor:
                 "file_path": str(file_path.absolute()),
             }
 
-    def __del__(self) -> None:
-        """Cleanup adapter on deletion"""
+    def shutdown(self) -> None:
+        """Shutdown the adapter to clean up resources."""
         if self.adapter is not None:
             try:
                 self.adapter.shutdown()
             except Exception as e:
                 logger.debug(f"Error during adapter shutdown: {e}")
+
+    def __del__(self) -> None:
+        """Cleanup adapter on deletion (fallback)"""
+        self.shutdown()
 
 
 # Convenience functions

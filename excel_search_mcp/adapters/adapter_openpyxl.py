@@ -29,6 +29,9 @@ class OpenpyxlAdapter(ExcelAdapter):
     Cons:
     - Cannot read DRM-protected Excel files
     - May have formula evaluation issues
+
+    Note:
+    - merged_regions field is not yet implemented (returns empty list)
     """
 
     def __init__(

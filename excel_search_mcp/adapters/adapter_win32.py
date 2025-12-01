@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .adapter_base import ExcelAdapter
-from .sheet_model import SheetModel, CellRange
+from .sheet_model import CellRange, SheetModel
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,9 @@ class Win32Adapter(ExcelAdapter):
     - Requires Excel installation
     - Slower than openpyxl
     - Cannot run in parallel (COM threading issues)
+
+    Note:
+    - merged_regions field is not yet implemented (returns empty list)
     """
 
     def __init__(self) -> None:
@@ -115,7 +118,6 @@ class Win32Adapter(ExcelAdapter):
         used = ws.UsedRange
         top_row = used.Row
         left_col = used.Column
-        used_row_count = used.Rows.Count
         used_col_count = used.Columns.Count
 
         # Find actual last row with data
@@ -230,9 +232,7 @@ class Win32Adapter(ExcelAdapter):
             return [[Win32Adapter._normalize_win32_value(v)] for v in raw]
 
         # NxM (general case)
-        return [
-            [Win32Adapter._normalize_win32_value(v) for v in row] for row in raw
-        ]
+        return [[Win32Adapter._normalize_win32_value(v) for v in row] for row in raw]
 
     def _restore_settings(self) -> None:
         """
