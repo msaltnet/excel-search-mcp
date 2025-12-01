@@ -183,9 +183,9 @@ pip install -r requirements.txt
 Excel 파일의 데이터를 JSON으로 읽어옵니다.
 
 **매개변수**:
-- `file_path` (필수): Excel 파일의 절대 경로
-- `worksheet_name` (선택): 읽을 워크시트 이름 (기본값: 첫 번째 워크시트)
-- `max_rows` (선택): 읽을 최대 행 수 (기본값: 모든 행)
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
+- `worksheet_name` (선택): 읽을 워크시트 이름. 지정하지 않으면 첫 번째 시트를 읽습니다.
+- `max_rows` (선택): 읽을 최대 행 수. 지정하지 않으면 모든 행을 읽습니다. 참고: 첫 번째 행은 항상 헤더로 처리되며 행 수에서 제외됩니다.
 
 **반환값**:
 ```json
@@ -212,9 +212,9 @@ Excel 파일의 데이터를 JSON으로 읽어옵니다.
 Excel 파일 내에서 특정 텍스트를 검색합니다.
 
 **매개변수**:
-- `file_path` (필수): Excel 파일의 절대 경로
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
 - `search_term` (필수): 검색할 텍스트
-- `worksheet_name` (선택): 검색할 워크시트 이름
+- `worksheet_name` (선택): 검색할 워크시트 이름. 지정하지 않으면 첫 번째 시트를 검색합니다.
 - `case_sensitive` (선택): 대소문자 구분 여부 (기본값: false)
 
 **반환값**:
@@ -235,6 +235,22 @@ Excel 파일 내에서 특정 텍스트를 검색합니다.
       "cell_address": "A1"
     }
   ]
+}
+```
+
+### 4. `list_excel_sheets`
+Excel 파일의 모든 시트 이름 목록을 반환합니다.
+
+**매개변수**:
+- `file_path` (필수): Excel 파일의 절대 경로. 설정된 work_directory 내에 있어야 합니다.
+
+**반환값**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "sheets": ["Sheet1", "Sheet2", "Data"],
+  "sheet_count": 3
 }
 ```
 

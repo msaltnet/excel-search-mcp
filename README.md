@@ -188,9 +188,9 @@ Returns a list of Excel files in the specified directory.
 Reads Excel file data and converts it to JSON format.
 
 **Parameters**:
-- `file_path` (required): Absolute path to the Excel file
-- `worksheet_name` (optional): Name of worksheet to read (default: first worksheet)
-- `max_rows` (optional): Maximum number of rows to read (default: all rows)
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
+- `worksheet_name` (optional): Name of worksheet to read. If not specified, reads the first sheet in the workbook.
+- `max_rows` (optional): Maximum number of rows to read. If not specified, reads all rows. Note: The first row is always treated as headers and excluded from the row count.
 
 **Return Value**:
 ```json
@@ -217,9 +217,9 @@ Reads Excel file data and converts it to JSON format.
 Searches for specific text within Excel files.
 
 **Parameters**:
-- `file_path` (required): Absolute path to the Excel file
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
 - `search_term` (required): Text to search for
-- `worksheet_name` (optional): Specific worksheet to search
+- `worksheet_name` (optional): Name of the worksheet to search in. If not specified, searches the first sheet in the workbook.
 - `case_sensitive` (optional): Whether search should be case sensitive (default: false)
 
 **Return Value**:
@@ -240,6 +240,22 @@ Searches for specific text within Excel files.
       "cell_address": "A1"
     }
   ]
+}
+```
+
+### 4. `list_excel_sheets`
+Returns a list of all sheet names in an Excel file.
+
+**Parameters**:
+- `file_path` (required): Absolute path to the Excel file. Must be within the configured work_directory.
+
+**Return Value**:
+```json
+{
+  "success": true,
+  "file_path": "/path/to/file.xlsx",
+  "sheets": ["Sheet1", "Sheet2", "Data"],
+  "sheet_count": 3
 }
 ```
 

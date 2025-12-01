@@ -6,9 +6,10 @@ Main module of MCP server for Excel file search and processing
 
 import json
 import logging
-from typing import Optional
+from typing import Annotated, Optional
 
 from mcp.server.fastmcp import Context, FastMCP
+from pydantic import Field
 
 from .config_manager import config_manager
 from .excel_processor import list_excel_sheets, read_excel_data, search_in_excel
@@ -47,10 +48,26 @@ def create_server() -> FastMCP:
 
     @server.tool()
     def read_excel_data_tool(
-        file_path: str,
+        file_path: Annotated[
+            str,
+            Field(
+                description="Path to the Excel file to read. Can be absolute or relative path. Must be within the configured work_directory."
+            ),
+        ],
         ctx: Context,
-        worksheet_name: Optional[str] = None,
-        max_rows: Optional[int] = None,
+        worksheet_name: Annotated[
+            Optional[str],
+            Field(
+                description="Name of the worksheet to read. If None, reads the first sheet in the workbook."
+            ),
+        ] = None,
+        max_rows: Annotated[
+            Optional[int],
+            Field(
+                description="Maximum number of rows to read from the sheet. If None, reads all rows. The first row is always treated as headers and excluded from the row count.",
+                ge=1,
+            ),
+        ] = None,
     ) -> str:
         """Read Excel file data and convert it to JSON format."""
         try:
@@ -73,11 +90,31 @@ def create_server() -> FastMCP:
 
     @server.tool()
     def search_in_excel_tool(
-        file_path: str,
-        search_term: str,
+        file_path: Annotated[
+            str,
+            Field(
+                description="Path to the Excel file to search in. Can be absolute or relative path. Must be within the configured work_directory."
+            ),
+        ],
+        search_term: Annotated[
+            str,
+            Field(
+                description="Text to search for within the Excel file. Searches all cell values in the specified worksheet."
+            ),
+        ],
         ctx: Context,
-        worksheet_name: Optional[str] = None,
-        case_sensitive: bool = False,
+        worksheet_name: Annotated[
+            Optional[str],
+            Field(
+                description="Name of the worksheet to search in. If None, searches the first sheet in the workbook."
+            ),
+        ] = None,
+        case_sensitive: Annotated[
+            bool,
+            Field(
+                description="Whether to perform case-sensitive search. Default is False (case-insensitive)."
+            ),
+        ] = False,
     ) -> str:
         """Search for specific text within Excel file(s)."""
         try:
@@ -104,7 +141,15 @@ def create_server() -> FastMCP:
             )
 
     @server.tool()
-    def list_excel_sheets_tool(file_path: str, ctx: Context) -> str:
+    def list_excel_sheets_tool(
+        file_path: Annotated[
+            str,
+            Field(
+                description="Path to the Excel file. Can be absolute or relative path. Must be within the configured work_directory."
+            ),
+        ],
+        ctx: Context,
+    ) -> str:
         """List all sheet names in an Excel file."""
         try:
             if not file_path:
